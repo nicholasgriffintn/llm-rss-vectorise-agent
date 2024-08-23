@@ -72,9 +72,7 @@ export default {
 
       const allEntries = stories.flatMap((feed) => feed.entries);
 
-      const limitedEntries = allEntries.slice(0, 10);
-
-      for (let entry of limitedEntries) {
+      for (let entry of allEntries) {
         let parsedString;
         let id = entry.guid?.['#text'] || entry.id || entry.link;
         if (id.length > 64) {
@@ -120,7 +118,7 @@ export default {
           author: entry.author?.name,
         };
 
-        const newItem = await prisma.item.upsert({
+        await prisma.item.upsert({
           where: {
             id: id,
           },
