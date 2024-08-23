@@ -5,6 +5,12 @@ import type { Env } from '../types';
 import { embeddingsModel, gatewayId } from '../constants';
 import { logger } from '../lib/logger';
 
+/**
+ * Handles the processing of a batch of messages from the queue.
+ * 
+ * @param batch - The batch of messages to process.
+ * @param env - The environment object containing various services.
+ */
 export async function handleQueue(batch, env: Env) {
   const messages = parseMessages(batch);
   logger.log(`consuming from our queue: ${JSON.stringify(messages)}`);
@@ -15,6 +21,12 @@ export async function handleQueue(batch, env: Env) {
   logger.log(JSON.stringify(inserted));
 }
 
+/**
+ * Parses the messages from the batch.
+ * 
+ * @param batch - The batch of messages.
+ * @returns An array of parsed messages.
+ */
 function parseMessages(batch): Array<{
   attempts: number;
   body: {
@@ -37,11 +49,25 @@ function parseMessages(batch): Array<{
   }>;
 }
 
+/**
+ * Initializes the Prisma client with the provided environment.
+ * 
+ * @param env - The environment object containing various services.
+ * @returns The initialized Prisma client.
+ */
 function initializePrisma(env: Env): PrismaClient {
   const adapter = new PrismaD1(env.DB);
   return new PrismaClient({ adapter });
 }
 
+/**
+ * Processes each message, updating the item status and generating vectors.
+ * 
+ * @param messages - The array of messages to process.
+ * @param env - The environment object containing various services.
+ * @param prisma - The Prisma client for database operations.
+ * @returns A promise that resolves to an array of inserted items.
+ */
 async function processMessages(
   messages: Array<{
     attempts: number;
@@ -81,6 +107,13 @@ async function processMessages(
   return inserted;
 }
 
+/**
+ * Updates the status of an item in the database.
+ * 
+ * @param prisma - The Prisma client for database operations.
+ * @param id - The ID of the item to update.
+ * @param status - The new status of the item.
+ */
 async function updateItemStatus(
   prisma: PrismaClient,
   id: string,
@@ -93,6 +126,15 @@ async function updateItemStatus(
   });
 }
 
+/**
+ * Generates vectors using the AI service.
+ * 
+ * @param env - The environment object containing various services.
+ * @param id - The ID of the item.
+ * @param text - The text to generate vectors from.
+ * @param metadata - The metadata associated with the item.
+ * @returns A promise that resolves to an array of vectors.
+ */
 async function generateVectors(
   env: Env,
   id: string,

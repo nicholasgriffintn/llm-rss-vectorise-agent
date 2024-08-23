@@ -3,7 +3,14 @@ import { fetchRSSFeeds } from '../lib/rss';
 import type { Env } from '../types';
 import { logger } from '../lib/logger';
 
-export async function handleInsert(env: Env, prisma: PrismaClient) {
+/**
+ * Handles the insertion of RSS feed entries into the database.
+ * 
+ * @param env - The environment object containing various services.
+ * @param prisma - The Prisma client for database operations.
+ * @returns A promise that resolves to an array of queued entry IDs.
+ */
+export async function handleInsert(env: Env, prisma: PrismaClient): Promise<string[]> {
   const stories = await fetchRSSFeeds();
   const allEntries = stories.flatMap((feed) => feed.entries);
   const queued: string[] = [];
@@ -36,11 +43,23 @@ export async function handleInsert(env: Env, prisma: PrismaClient) {
   return queued;
 }
 
+/**
+ * Generates a unique ID for an RSS feed entry.
+ * 
+ * @param entry - The RSS feed entry.
+ * @returns A unique ID string.
+ */
 function generateId(entry: any): string {
   let id = entry.guid?.['#text'] || entry.id || entry.link;
   return id.length > 64 ? id.slice(0, 64) : id;
 }
 
+/**
+ * Parses the content of an RSS feed entry.
+ * 
+ * @param entry - The RSS feed entry.
+ * @returns The parsed content string.
+ */
 function parseContent(entry: any): string {
   if (entry.content) {
     return typeof entry.content === 'string'
@@ -54,6 +73,12 @@ function parseContent(entry: any): string {
   return entry.description || '';
 }
 
+/**
+ * Extracts metadata from an RSS feed entry.
+ * 
+ * @param entry - The RSS feed entry.
+ * @returns An object containing the metadata.
+ */
 function extractMetadata(entry: any): Record<string, any> {
   return {
     url: entry?.link?.['@_href'],
