@@ -21,6 +21,14 @@ export default {
       return new Response('', { status: 404 });
     }
 
+    if (!env.VECTORIZE) {
+      return new Response('Vectorize not available', { status: 500 });
+    }
+
+    if (!env.AI) {
+      return new Response('AI not available', { status: 500 });
+    }
+
     const rssFeeds = [
       'https://www.wired.com/feed/rss',
       'https://www.theverge.com/rss/index.xml',
@@ -108,10 +116,6 @@ export default {
               },
             });
           });
-
-          if (!env.VECTORIZE) {
-            return new Response('Vectorize not available', { status: 500 });
-          }
 
           let insertedItem = await env.VECTORIZE.upsert(vectors);
 
