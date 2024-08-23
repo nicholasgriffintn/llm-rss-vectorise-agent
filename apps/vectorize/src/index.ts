@@ -94,6 +94,9 @@ export default {
         if (existing?.status === 'processed') {
           console.log('Already inserted', entry.title);
           continue;
+        } else if (existing?.status === 'queued') {
+          console.log('Already queued', entry.title);
+          continue;
         }
 
         if (entry.content) {
