@@ -1,0 +1,19 @@
+{
+  "name": "@llm-rss-vectorise-agent/vectorize",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy src/index.ts",
+    "start": "wrangler dev",
+    "test:types": "tsc --noEmit",
+    "wrangler": "wrangler"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240712.0",
+    "typescript": "^5.5.3",
+    "wrangler": "^3.64.0"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.4.1"
+  }
+}

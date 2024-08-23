@@ -1,0 +1,10 @@
+name = "llm-rss-vectorise-agent-vectorize"
+main = "src/index.ts"
+compatibility_date = "2023-09-22"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "rss-embeddings"
+
+[ai]
+binding = "AI"
