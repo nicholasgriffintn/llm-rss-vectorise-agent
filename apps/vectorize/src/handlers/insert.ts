@@ -50,13 +50,16 @@ export async function handleInsert(env: Env, prisma: PrismaClient): Promise<stri
  * @returns A unique ID string.
  */
 function generateId(entry: any): string {
-  let id = entry.guid?.['#text'] || entry.id || entry.link;
+  let id = entry.guid?.['#text'] || entry.guid || entry.id || entry.link;
+  if (typeof id !== 'string') {
+    id = JSON.stringify(id);
+  }
   return id.length > 64 ? id.slice(0, 64) : id;
 }
 
 /**
  * Parses the content of an RSS feed entry.
- * 
+ *
  * @param entry - The RSS feed entry.
  * @returns The parsed content string.
  */
@@ -75,17 +78,26 @@ function parseContent(entry: any): string {
 
 /**
  * Extracts metadata from an RSS feed entry.
- * 
+ *
  * @param entry - The RSS feed entry.
  * @returns An object containing the metadata.
  */
 function extractMetadata(entry: any): Record<string, any> {
   return {
-    url: entry?.link?.['@_href'],
+    url: entry?.link?.['@_href'] || entry.link,
     title: entry.title,
     description: entry.description,
-    published: entry.published,
+    published: entry.published || entry.pubDate || entry.date,
     updated: entry.updated,
     author: entry.author?.name,
+    image: entry.image
+      ? {
+          url: entry.image?.url,
+          title: entry.image?.title,
+          link: entry.image?.link,
+        }
+      : null,
+    thumbnail: entry.thumbnail,
+    copyright: entry.copyright,
   };
 }
