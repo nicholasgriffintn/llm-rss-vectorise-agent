@@ -109,11 +109,10 @@ export default {
               .replace(/\\n/g, '');
           }
         } else if (entry.description) {
-          // TODO: Can we do something better? Maybe extract the text from the HTML?
-          // TODO: Is it possible to go through each vector later and update these ones?
           parsedString = entry.description;
         }
 
+        // TODO: Check this works for various RSS feeds
         const metadata = {
           url: entry?.link?.['@_href'],
           title: entry.title,
@@ -220,6 +219,8 @@ export default {
           status: 'processing',
         },
       });
+
+      // TODO: Can we use puppeteer to extract text from a URL?
 
       if (parsedString) {
         let modelResp = await env.AI.run(
