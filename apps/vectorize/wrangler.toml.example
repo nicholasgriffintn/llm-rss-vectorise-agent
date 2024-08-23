@@ -22,3 +22,5 @@ binding = "AI"
  queue = "llm-rss-vectorise-agent"
  max_batch_size = 10
  max_batch_timeout = 5
+
+browser = { binding = "BROWSER" }

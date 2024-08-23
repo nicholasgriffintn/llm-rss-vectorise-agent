@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaD1 } from '@prisma/adapter-d1';
+import puppeteer from '@cloudflare/puppeteer';
 
 import type { Env } from '../types';
 import { embeddingsModel, gatewayId } from '../constants';
@@ -7,7 +8,7 @@ import { logger } from '../lib/logger';
 
 /**
  * Handles the processing of a batch of messages from the queue.
- * 
+ *
  * @param batch - The batch of messages to process.
  * @param env - The environment object containing various services.
  */
@@ -23,7 +24,7 @@ export async function handleQueue(batch, env: Env) {
 
 /**
  * Parses the messages from the batch.
- * 
+ *
  * @param batch - The batch of messages.
  * @returns An array of parsed messages.
  */
@@ -51,7 +52,7 @@ function parseMessages(batch): Array<{
 
 /**
  * Initializes the Prisma client with the provided environment.
- * 
+ *
  * @param env - The environment object containing various services.
  * @returns The initialized Prisma client.
  */
@@ -62,7 +63,7 @@ function initializePrisma(env: Env): PrismaClient {
 
 /**
  * Processes each message, updating the item status and generating vectors.
- * 
+ *
  * @param messages - The array of messages to process.
  * @param env - The environment object containing various services.
  * @param prisma - The Prisma client for database operations.
@@ -95,9 +96,27 @@ async function processMessages(
       continue;
     }
 
+    let queryText = parsedString;
+    if (metadata.url && env.BROWSER) {
+      const url = new URL(metadata.url).toString();
+      logger.log('Fetching', url);
+      // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
+      const browser = await puppeteer.launch(env.BROWSER);
+      const page = await browser.newPage();
+      await page.goto(url);
+
+      const pTags = await page.$$('p');
+      const text = await Promise.all(
+        pTags.map((p) => page.evaluate((el) => el.textContent, p))
+      );
+      queryText = text.join(' ');
+
+      await browser.close();
+    }
+
     await updateItemStatus(prisma, id, 'processing');
 
-    const vectors = await generateVectors(env, id, parsedString, metadata);
+    const vectors = await generateVectors(env, id, queryText, metadata);
     const insertedItem = await env.VECTORIZE.upsert(vectors);
 
     await updateItemStatus(prisma, id, 'processed');

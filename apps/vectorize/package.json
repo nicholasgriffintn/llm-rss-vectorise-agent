@@ -13,6 +13,7 @@
     "db:prisma:generate": "npx prisma generate"
   },
   "devDependencies": {
+    "@cloudflare/puppeteer": "^0.0.13",
     "@cloudflare/workers-types": "^4.20240712.0",
     "typescript": "^5.5.3",
     "wrangler": "^3.64.0"
