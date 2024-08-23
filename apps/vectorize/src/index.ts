@@ -90,7 +90,7 @@ export default {
           );
 
           let vectors: VectorizeVector[] = [];
-          let id = entry.guid || entry.id || entry.link;
+          let id = entry.guid?.['#text'] || entry.id || entry.link;
           if (id.length > 64) {
             id = id.slice(0, 64);
           }
@@ -144,7 +144,7 @@ export default {
     );
 
     let matches = await env.VECTORIZE.query(queryVector.data[0], {
-      topK: 1,
+      topK: 15,
     });
     return Response.json({
       matches: matches,
