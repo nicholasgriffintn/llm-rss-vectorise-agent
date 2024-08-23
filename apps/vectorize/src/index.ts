@@ -11,6 +11,7 @@ export interface Env {
   VECTORIZE: Vectorize;
   AI: Ai;
   DB: D1Database;
+  MAIN_QUEUE: Queue;
 }
 interface EmbeddingResponse {
   shape: number[];
@@ -36,6 +37,10 @@ export default {
       return new Response('DB not available', { status: 500 });
     }
 
+    if (!env.MAIN_QUEUE) {
+      return new Response('Main queue not available', { status: 500 });
+    }
+
     const adapter = new PrismaD1(env.DB);
     const prisma = new PrismaClient({ adapter });
 
@@ -45,7 +50,7 @@ export default {
       'http://feeds.bbci.co.uk/news/rss.xml',
     ];
 
-    const inserted: VectorizeAsyncMutation[] = [];
+    const queued: any[] = [];
 
     if (path === '/insert') {
       const stories: Record<any, any>[] = [];
@@ -118,59 +123,31 @@ export default {
           author: entry.author?.name,
         };
 
+        await env.MAIN_QUEUE.send({
+          id: id,
+          data: {
+            text: parsedString,
+            metadata,
+          },
+        });
+
         await prisma.item.upsert({
           where: {
             id: id,
           },
           update: {
-            status: 'processing',
+            status: 'queued',
           },
           create: {
             id: id,
-            status: 'processing',
+            status: 'queued',
           },
         });
 
-        if (parsedString) {
-          let modelResp = await env.AI.run(
-            '@cf/baai/bge-base-en-v1.5',
-            {
-              text: [parsedString],
-            },
-            {
-              gateway: {
-                id: 'llm-rss-vectorise-agent',
-                skipCache: false,
-                cacheTtl: 3360,
-              },
-            }
-          );
-
-          let vectors: VectorizeVector[] = [];
-          modelResp.data.forEach((vector) => {
-            vectors.push({
-              id: `${id}`,
-              values: vector,
-              metadata,
-            });
-          });
-
-          let insertedItem = await env.VECTORIZE.upsert(vectors);
-
-          await prisma.item.update({
-            where: {
-              id: id,
-            },
-            data: {
-              status: 'processed',
-            },
-          });
-
-          inserted.push(insertedItem);
-        }
+        queued.push(id);
       }
 
-      return Response.json(inserted);
+      return Response.json(queued);
     }
 
     const { searchParams } = new URL(request.url);
@@ -201,5 +178,88 @@ export default {
     return Response.json({
       matches: matches,
     });
+  },
+  async queue(batch, env): Promise<void> {
+    let messages = batch.messages as unknown as {
+      attempts: number;
+      body: {
+        id: string;
+        data: {
+          text: string;
+          metadata: Record<string, any>;
+        };
+      };
+    }[];
+    console.log(`consuming from our queue: ${JSON.stringify(messages)}`);
+
+    const adapter = new PrismaD1(env.DB);
+    const prisma = new PrismaClient({ adapter });
+
+    let inserted: any[] = [];
+
+    for (let message of messages) {
+      const messageBody = message.body;
+      let id = messageBody.id;
+      let parsedString = messageBody?.data?.text;
+      let metadata = messageBody?.data?.metadata;
+
+      if (!parsedString) {
+        console.log('No text for', id);
+        continue;
+      }
+
+      await prisma.item.upsert({
+        where: {
+          id: id,
+        },
+        update: {
+          status: 'processing',
+        },
+        create: {
+          id: id,
+          status: 'processing',
+        },
+      });
+
+      if (parsedString) {
+        let modelResp = await env.AI.run(
+          '@cf/baai/bge-base-en-v1.5',
+          {
+            text: [parsedString],
+          },
+          {
+            gateway: {
+              id: 'llm-rss-vectorise-agent',
+              skipCache: false,
+              cacheTtl: 3360,
+            },
+          }
+        );
+
+        let vectors: VectorizeVector[] = [];
+        modelResp.data.forEach((vector) => {
+          vectors.push({
+            id: `${id}`,
+            values: vector,
+            metadata,
+          });
+        });
+
+        let insertedItem = await env.VECTORIZE.upsert(vectors);
+
+        await prisma.item.update({
+          where: {
+            id: id,
+          },
+          data: {
+            status: 'processed',
+          },
+        });
+
+        inserted.push(insertedItem);
+      }
+    }
+
+    console.log(inserted);
   },
 } satisfies ExportedHandler<Env>;

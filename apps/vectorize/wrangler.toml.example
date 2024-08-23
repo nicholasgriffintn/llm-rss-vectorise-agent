@@ -13,3 +13,12 @@ database_id = "<ID>"
 
 [ai]
 binding = "AI"
+
+[[queues.producers]]
+ queue = "llm-rss-vectorise-agent"
+ binding = "MAIN_QUEUE"
+
+[[queues.consumers]]
+ queue = "llm-rss-vectorise-agent"
+ max_batch_size = 10
+ max_batch_timeout = 5
