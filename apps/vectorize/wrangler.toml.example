@@ -6,5 +6,10 @@ compatibility_date = "2023-09-22"
 binding = "VECTORIZE"
 index_name = "rss-embeddings"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "llm-rss-vectorise-agent"
+database_id = "<ID>"
+
 [ai]
 binding = "AI"

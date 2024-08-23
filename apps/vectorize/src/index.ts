@@ -1,4 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
+import { PrismaClient } from '@prisma/client';
+import { PrismaD1 } from '@prisma/adapter-d1';
 
 const options = {
   ignoreAttributes: false,
@@ -8,6 +10,7 @@ const parser = new XMLParser(options);
 export interface Env {
   VECTORIZE: Vectorize;
   AI: Ai;
+  DB: D1Database;
 }
 interface EmbeddingResponse {
   shape: number[];
@@ -28,6 +31,13 @@ export default {
     if (!env.AI) {
       return new Response('AI not available', { status: 500 });
     }
+
+    if (!env.DB) {
+      return new Response('DB not available', { status: 500 });
+    }
+
+    const adapter = new PrismaD1(env.DB);
+    const prisma = new PrismaClient({ adapter });
 
     const rssFeeds = [
       'https://www.wired.com/feed/rss',
@@ -62,8 +72,27 @@ export default {
 
       const allEntries = stories.flatMap((feed) => feed.entries);
 
-      for (let entry of allEntries) {
+      const limitedEntries = allEntries.slice(0, 10);
+
+      for (let entry of limitedEntries) {
         let parsedString;
+        let id = entry.guid?.['#text'] || entry.id || entry.link;
+        if (id.length > 64) {
+          id = id.slice(0, 64);
+        }
+
+        // Check the DB to see if we've already inserted this item
+        let existing = await prisma.item.findUnique({
+          where: {
+            id: id,
+          },
+        });
+
+        if (existing?.status === 'processed') {
+          console.log('Already inserted', entry.title);
+          continue;
+        }
+
         if (entry.content) {
           // We can just embed the content directly
           console.log('Inserting', entry.title);
@@ -82,6 +111,28 @@ export default {
           parsedString = entry.description;
         }
 
+        const metadata = {
+          url: entry?.link?.['@_href'],
+          title: entry.title,
+          description: entry.description,
+          published: entry.published,
+          updated: entry.updated,
+          author: entry.author?.name,
+        };
+
+        const newItem = await prisma.item.upsert({
+          where: {
+            id: id,
+          },
+          update: {
+            status: 'processing',
+          },
+          create: {
+            id: id,
+            status: 'processing',
+          },
+        });
+
         if (parsedString) {
           let modelResp = await env.AI.run(
             '@cf/baai/bge-base-en-v1.5',
@@ -98,26 +149,24 @@ export default {
           );
 
           let vectors: VectorizeVector[] = [];
-          let id = entry.guid?.['#text'] || entry.id || entry.link;
-          if (id.length > 64) {
-            id = id.slice(0, 64);
-          }
           modelResp.data.forEach((vector) => {
             vectors.push({
               id: `${id}`,
               values: vector,
-              metadata: {
-                url: entry?.link?.['@_href'],
-                title: entry.title,
-                description: entry.description,
-                published: entry.published,
-                updated: entry.updated,
-                author: entry.author?.name,
-              },
+              metadata,
             });
           });
 
           let insertedItem = await env.VECTORIZE.upsert(vectors);
+
+          await prisma.item.update({
+            where: {
+              id: id,
+            },
+            data: {
+              status: 'processed',
+            },
+          });
 
           inserted.push(insertedItem);
         }
