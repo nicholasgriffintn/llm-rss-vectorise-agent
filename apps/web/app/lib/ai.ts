@@ -20,7 +20,7 @@ export async function handleQuery(
   env: Env
 ): Promise<unknown> {
   if (!userQuery) {
-    throw new Error('No query provided');
+    return [];
   }
 
   const queryVector = await getQueryVector(userQuery, env);
@@ -66,7 +66,7 @@ export async function getQueryVector(
  */
 export async function getMatches(queryVector: EmbeddingResponse, env: Env) {
   if (!env.VECTORIZE) {
-    throw new Error('VECTORIZE service not available');
+    return [];
   }
 
   return env.VECTORIZE.query(queryVector.data[0], {
