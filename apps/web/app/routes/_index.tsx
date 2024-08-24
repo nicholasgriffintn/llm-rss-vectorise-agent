@@ -25,7 +25,8 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
   const query = url.searchParams.get('query');
 
   if (query) {
-    const result = handleQuery(query, env);
+    console.log('Getting results for query:', query);
+    const result = await handleQuery(query, env);
 
     return json(result);
   }
