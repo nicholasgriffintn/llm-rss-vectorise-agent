@@ -1,9 +1,12 @@
-import type { MetaFunction } from '@remix-run/cloudflare';
+import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { useState, useCallback } from 'react';
 import { Search } from 'lucide-react';
+import { json } from '@remix-run/cloudflare';
+import { useLoaderData, useSubmit, Form } from '@remix-run/react';
 
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import { handleQuery } from '../lib/ai';
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,31 +18,46 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export async function loader({ context, request }: LoaderFunctionArgs) {
+  const { env } = context.cloudflare;
+
+  const url = new URL(request.url);
+  const query = url.searchParams.get('query');
+
+  if (query) {
+    const result = handleQuery(query, env);
+
+    return json(result);
+  }
+
+  return json([]);
+}
+
 const exampleSearches = ['Apple', 'Android', 'Engineering', 'Open-Source'];
 
 export default function Index() {
   const [query, setQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [results, setResults] = useState<string[]>([]);
   const [isIntroVisible, setIsIntroVisible] = useState(true);
 
-  const handleSearch = useCallback((searchQuery: string) => {
-    if (searchQuery.trim()) {
-      const mockResults = [
-        `Latest article about "${searchQuery}" from TechCrunch`,
-        `Breaking news on "${searchQuery}" from BBC`,
-        `In-depth analysis of "${searchQuery}" from The Verge`,
-      ];
-      setResults(mockResults);
-      setHasSearched(true);
-      setIsIntroVisible(false);
-      setQuery(searchQuery);
-    } else {
-      setResults([]);
-      setHasSearched(false);
-      setIsIntroVisible(true);
-    }
-  }, []);
+  const data = useLoaderData<typeof loader>();
+  console.log(data);
+  const submit = useSubmit();
+
+  const handleSearch = useCallback(
+    (searchQuery: string) => {
+      if (searchQuery.trim()) {
+        setHasSearched(true);
+        setIsIntroVisible(false);
+        setQuery(searchQuery);
+        submit({ query: searchQuery });
+      } else {
+        setHasSearched(false);
+        setIsIntroVisible(true);
+      }
+    },
+    [submit]
+  );
 
   return (
     <>
@@ -66,7 +84,7 @@ export default function Index() {
           </div>
         )}
         <div className="w-full space-y-2">
-          <form
+          <Form
             onSubmit={(e) => {
               e.preventDefault();
               handleSearch(query);
@@ -84,7 +102,7 @@ export default function Index() {
               <Search className="h-4 w-4 mr-2" />
               Search
             </Button>
-          </form>
+          </Form>
         </div>
         {isIntroVisible && (
           <div className="flex flex-wrap justify-center gap-2 mt-4">
@@ -106,9 +124,9 @@ export default function Index() {
       {hasSearched && (
         <div className="w-full max-w-2xl mt-8">
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
-          {results.length > 0 ? (
+          {data?.length > 0 ? (
             <ul className="space-y-4">
-              {results.map((result, index) => (
+              {data.map((result, index) => (
                 <li
                   key={index}
                   className="bg-card text-card-foreground p-4 rounded-lg shadow"

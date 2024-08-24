@@ -11,3 +11,7 @@ database_id = "<ID>"
 
 [ai]
 binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "rss-embeddings"
