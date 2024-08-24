@@ -132,7 +132,12 @@ export default function Index() {
                   key={index}
                   className="bg-card text-card-foreground p-4 rounded-lg shadow"
                 >
-                  {result}
+                  <a href={result.metadata.url} className="text-lg font-bold">
+                    {result.metadta.title}
+                  </a>
+                  <p className="text-sm text-muted-foreground">
+                    {result.metadata.description}
+                  </p>
                 </li>
               ))}
             </ul>
