@@ -63,6 +63,7 @@ export function generateId(entry: any): string {
   if (typeof id !== 'string') {
     id = JSON.stringify(id);
   }
+  id = id.replace(/#.*$/, '');
   return id.length > 64 ? id.slice(0, 64) : id;
 }
 
