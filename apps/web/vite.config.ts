@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import {
   vitePlugin as remix,
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
@@ -16,5 +17,13 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
+    sentryVitePlugin({
+      org: 'ngpersonal',
+      project: 'llm-rss-web',
+    }),
   ],
+
+  build: {
+    sourcemap: true,
+  },
 });
