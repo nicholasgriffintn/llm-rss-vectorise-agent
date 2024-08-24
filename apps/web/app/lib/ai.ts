@@ -15,13 +15,10 @@ export interface EmbeddingResponse {
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to a Response object containing the matches.
  */
-export async function handleQuery(
-  userQuery: string,
-  env: Env
-): Promise<unknown> {
+export async function handleQuery(userQuery: string, env: Env) {
   if (!userQuery) {
     console.error('No query provided');
-    return [];
+    return { count: 0, matches: [] };
   }
 
   const queryVector = await getQueryVector(userQuery, env);
@@ -73,6 +70,6 @@ export async function getMatches(queryVector: EmbeddingResponse, env: Env) {
 
   return env.VECTORIZE.query(queryVector.data[0], {
     topK: 15,
-    returnMetadata: 'all',
+    returnMetadata: true,
   });
 }

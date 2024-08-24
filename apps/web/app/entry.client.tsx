@@ -15,7 +15,6 @@ Sentry.init({
       useLocation,
       useMatches,
     }),
-    Sentry.replayIntegration(),
   ],
 });
 
