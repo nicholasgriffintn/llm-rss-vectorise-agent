@@ -136,6 +136,8 @@ export default function Index() {
                     >
                       <a
                         href={result.metadata.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-lg font-bold"
                       >
                         {result.metadata.title}
