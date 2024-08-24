@@ -159,7 +159,8 @@ async function processEntryMessage(
   }
 
   let queryText = parsedString;
-  if (metadata.url && env.BROWSER) {
+  // TODO: Make this work, getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"
+  /* if (metadata.url && env.BROWSER) {
     const url = new URL(metadata.url).toString();
     logger.log('Fetching', url);
     // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
@@ -174,7 +175,7 @@ async function processEntryMessage(
     queryText = text.join(' ');
 
     await browser.close();
-  }
+  } */
 
   await updateItemStatus(prisma, id, 'processing');
 
