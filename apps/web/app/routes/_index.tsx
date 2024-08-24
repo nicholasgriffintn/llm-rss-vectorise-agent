@@ -127,19 +127,30 @@ export default function Index() {
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
           {data ? (
             <ul className="space-y-4">
-              {data.result.matches.map((result, index) => (
-                <li
-                  key={index}
-                  className="bg-card text-card-foreground p-4 rounded-lg shadow"
-                >
-                  <a href={result.metadata.url} className="text-lg font-bold">
-                    {result.metadta.title}
-                  </a>
-                  <p className="text-sm text-muted-foreground">
-                    {result.metadata.description}
-                  </p>
-                </li>
-              ))}
+              {data?.result?.matches?.length > 0 ? (
+                <>
+                  {data.result.matches.map((result, index) => (
+                    <li
+                      key={index}
+                      className="bg-card text-card-foreground p-4 rounded-lg shadow"
+                    >
+                      <a
+                        href={result.metadata.url}
+                        className="text-lg font-bold"
+                      >
+                        {result.metadata.title}
+                      </a>
+                      {result.metadata.description ? (
+                        <p className="text-sm text-muted-foreground">
+                          {result.metadata.description}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </>
+              ) : (
+                <p className="text-muted-foreground">Loading...</p>
+              )}
             </ul>
           ) : (
             <p className="text-muted-foreground">No results found.</p>
