@@ -38,7 +38,7 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
   const prisma = initializePrisma(env);
 
   if (path === '/insert') {
-    const queued = await handleInsert(env, prisma);
+    const queued = await handleInsert(env);
     return Response.json(queued);
   }
 
@@ -54,6 +54,8 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
 async function handleQueueBatch(batch: any, env: Env): Promise<void> {
   await handleQueue(batch, env);
 }
+
+// TODO: Need to split the work here, really, we should have one queue that triggers each URL and then another that inserts the data into the database
 
 export default {
   fetch: handleFetch,

@@ -10,3 +10,15 @@ export interface EmbeddingResponse {
   shape: number[];
   data: number[][];
 }
+
+export type Message = {
+  attempts: number;
+  body: {
+    type: string;
+    id: string;
+    data: {
+      text: string;
+      metadata: Record<string, any>;
+    };
+  };
+};

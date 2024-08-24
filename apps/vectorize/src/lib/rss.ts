@@ -11,19 +11,15 @@ const parser = new XMLParser(options);
  *
  * @returns A promise that resolves to an array of parsed RSS feed objects.
  */
-export async function fetchRSSFeeds(): Promise<Record<string, any>[]> {
-  const stories: Record<string, any>[] = [];
+export async function fetchRSSFeed(
+  rssFeed: string
+): Promise<Record<string, any>> {
+  const feed = await fetchFeed(rssFeed);
+  const feedText = await feed.text();
+  const data = parser.parse(feedText);
+  const standardFeed = parseFeed(data);
 
-  for (const rssFeed of rssFeeds) {
-    const feed = await fetchFeed(rssFeed);
-    const feedText = await feed.text();
-    const data = parser.parse(feedText);
-    const standardFeed = parseFeed(data);
-
-    stories.push(standardFeed);
-  }
-
-  return stories;
+  return standardFeed;
 }
 
 /**
