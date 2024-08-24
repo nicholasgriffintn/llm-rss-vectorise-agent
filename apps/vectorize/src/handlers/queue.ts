@@ -1,17 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaD1 } from '@prisma/adapter-d1';
 import puppeteer from '@cloudflare/puppeteer';
 
 import type { Env, Message } from '../types';
 import { logger } from '../lib/logger';
 import { fetchRSSFeed } from '../lib/rss';
-import {
-  generateId,
-  parseContent,
-  extractMetadata,
-  updateItemStatus,
-  generateVectors,
-} from '../lib/queue';
+import { generateId, parseContent, extractMetadata } from '../lib/rss';
+import { initializePrisma, updateItemStatus } from '../lib/db';
+import { generateVectors } from '../lib/ai';
 
 /**
  * Handles the processing of a batch of messages from the queue.
@@ -36,17 +31,6 @@ export async function handleQueue(batch, env: Env) {
  */
 function parseMessages(batch): Array<Message> {
   return batch.messages as unknown as Array<Message>;
-}
-
-/**
- * Initializes the Prisma client with the provided environment.
- *
- * @param env - The environment object containing various services.
- * @returns The initialized Prisma client.
- */
-function initializePrisma(env: Env): PrismaClient {
-  const adapter = new PrismaD1(env.DB);
-  return new PrismaClient({ adapter });
 }
 
 /**
@@ -123,11 +107,7 @@ async function processRSSMessage(
       id: entryId,
       data: { text: parsedString, metadata },
     });
-    await prisma.item.upsert({
-      where: { id: entryId },
-      update: { status: 'queued' },
-      create: { id: entryId, status: 'queued' },
-    });
+    await updateItemStatus(prisma, entryId, 'queued');
 
     inserted.push({ id: entryId, status: 'queued' });
   }

@@ -1,25 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaD1 } from '@prisma/adapter-d1';
-
 import { handleInsert } from './handlers/insert';
 import { handleQueue } from './handlers/queue';
 import { handleQuery } from './handlers/query';
 import type { Env } from './types';
-
-/**
- * Initializes the Prisma client with the provided environment.
- * 
- * @param env - The environment object containing various services.
- * @returns The initialized Prisma client.
- */
-function initializePrisma(env: Env): PrismaClient {
-  const adapter = new PrismaD1(env.DB);
-  return new PrismaClient({ adapter });
-}
+import { initializePrisma } from './lib/db';
 
 /**
  * Handles the fetch request by routing to the appropriate handler based on the request path.
- * 
+ *
  * @param request - The incoming HTTP request.
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to a Response object.
