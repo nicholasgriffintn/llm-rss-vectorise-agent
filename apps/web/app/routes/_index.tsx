@@ -63,7 +63,7 @@ export default function Index() {
   return (
     <>
       <div
-        className={`w-full max-w-3xl transition-all duration-500 ease-in-out ${
+        className={`w-full py-4 px-4 sm:px-6 lg:px-8 lg:max-w-3xl transition-all duration-500 ease-in-out ${
           hasSearched ? 'mt-8' : 'mt-[15vh]'
         }`}
       >
@@ -123,7 +123,7 @@ export default function Index() {
       </div>
 
       {hasSearched && (
-        <div className="w-full max-w-2xl mt-8">
+        <div className="w-full py-4 px-4 sm:px-6 lg:px-8 lg:max-w-3xl">
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
           {data ? (
             <ul className="space-y-4">
