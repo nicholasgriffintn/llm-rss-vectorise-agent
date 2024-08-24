@@ -7,7 +7,7 @@ browser = { binding = "BROWSER" }
 
 [[vectorize]]
 binding = "VECTORIZE"
-index_name = "rss-embeddings"
+index_name = "llm-rss-embeddings"
 
 [[d1_databases]]
 binding = "DB"
