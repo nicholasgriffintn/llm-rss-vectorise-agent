@@ -1,4 +1,3 @@
-import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   Links,
   Meta,
@@ -42,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export const ErrorBoundary = () => {
   const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
+  console.error(error);
   return <div>Something went wrong</div>;
 };
 

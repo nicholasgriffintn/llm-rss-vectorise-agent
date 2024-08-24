@@ -1,12 +1,7 @@
-import * as Sentry from '@sentry/remix';
 import type { EntryContext } from '@remix-run/cloudflare';
 import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
 import { renderToReadableStream } from 'react-dom/server';
-
-export const handleError = Sentry.wrapHandleErrorWithSentry((error) => {
-  console.error(error);
-});
 
 export default async function handleRequest(
   request: Request,
