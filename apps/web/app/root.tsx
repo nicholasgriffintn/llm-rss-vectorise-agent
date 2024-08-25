@@ -18,7 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <div className="min-h-screen bg-background flex flex-col items-center p-0 text-center">
+        <div className="min-h-screen bg-background p-0">
           <header className="w-full py-4 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
               <div className="flex items-center flex-shrink-0 text-primary mr-6">
@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </header>
-          <main className="w-full">{children}</main>
+          <main>{children}</main>
         </div>
         <ScrollRestoration />
         <Scripts />

@@ -61,104 +61,106 @@ export default function Index() {
   );
 
   return (
-    <>
-      <div
-        className={`w-full max-w-3xl py-4 px-4 sm:px-6 lg:px-8 transition-all duration-500 ease-in-out ${
-          hasSearched ? 'mt-8' : 'mt-[15vh]'
-        }`}
-      >
-        {isIntroVisible && (
-          <div
-            className={`mb-4 transition-opacity duration-500 ease-in-out ${
-              hasSearched ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                Find the Latest News
-              </h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Discover breaking news, trending topics, and hidden gems from
-                across the web, all in one place.
-              </p>
+    <div className="flex flex-col">
+      <div className="w-full max-w-3xl py-4 px-4 sm:px-6 lg:px-8 m-auto items-center text-center">
+        <div
+          className={`transition-all duration-500 ease-in-out ${
+            hasSearched ? 'mt-8' : 'mt-[15vh]'
+          }`}
+        >
+          {isIntroVisible && (
+            <div
+              className={`mb-4 transition-opacity duration-500 ease-in-out ${
+                hasSearched ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                  Find the Latest News
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Discover breaking news, trending topics, and hidden gems from
+                  across the web, all in one place.
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-        <div className="w-full space-y-2">
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch(query);
-            }}
-            className="flex gap-2"
-          >
-            <Input
-              type="text"
-              placeholder="Search..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="flex-grow"
-            />
-            <Button type="submit" className="shrink-0">
-              <Search className="h-4 w-4 mr-2" />
-              Search
-            </Button>
-          </Form>
-        </div>
-        {isIntroVisible && (
-          <div className="flex flex-wrap justify-center gap-2 mt-4">
-            {exampleSearches.map((example) => (
-              <Button
-                key={example}
-                variant="outline"
-                size="sm"
-                onClick={() => handleSearch(example)}
-                className="text-xs"
-              >
-                {example}
+          )}
+          <div className="w-full space-y-2">
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch(query);
+              }}
+              className="flex gap-2"
+            >
+              <Input
+                type="text"
+                placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="flex-grow"
+              />
+              <Button type="submit" className="shrink-0">
+                <Search className="h-4 w-4 mr-2" />
+                Search
               </Button>
-            ))}
+            </Form>
+          </div>
+          {isIntroVisible && (
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {exampleSearches.map((example) => (
+                <Button
+                  key={example}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSearch(example)}
+                  className="text-xs"
+                >
+                  {example}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {hasSearched && (
+          <div className="w-full mt-4">
+            <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+            {data ? (
+              <ul className="space-y-4">
+                {data?.result?.matches?.length > 0 ? (
+                  <>
+                    {data.result.matches.map((result, index) => (
+                      <li
+                        key={index}
+                        className="bg-card text-card-foreground p-4 rounded-lg shadow"
+                      >
+                        <a
+                          href={result.metadata.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lg font-bold"
+                        >
+                          {result.metadata.title}
+                        </a>
+                        {result.metadata.description ? (
+                          <p className="text-sm text-muted-foreground">
+                            {result.metadata.description}
+                          </p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </>
+                ) : (
+                  <p className="text-muted-foreground">Loading...</p>
+                )}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground">No results found.</p>
+            )}
           </div>
         )}
       </div>
-
-      {hasSearched && (
-        <div className="w-full lg:max-w-3xl py-4 px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold mb-4">Search Results</h2>
-          {data ? (
-            <ul className="space-y-4">
-              {data?.result?.matches?.length > 0 ? (
-                <>
-                  {data.result.matches.map((result, index) => (
-                    <li
-                      key={index}
-                      className="bg-card text-card-foreground p-4 rounded-lg shadow"
-                    >
-                      <a
-                        href={result.metadata.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-lg font-bold"
-                      >
-                        {result.metadata.title}
-                      </a>
-                      {result.metadata.description ? (
-                        <p className="text-sm text-muted-foreground">
-                          {result.metadata.description}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </>
-              ) : (
-                <p className="text-muted-foreground">Loading...</p>
-              )}
-            </ul>
-          ) : (
-            <p className="text-muted-foreground">No results found.</p>
-          )}
-        </div>
-      )}
-    </>
+    </div>
   );
 }
