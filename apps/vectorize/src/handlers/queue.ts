@@ -217,7 +217,11 @@ async function processEntryMessage(
           logger.error('Text elements not found');
         }
 
-        queryText = [headline, ...textBlocks].join('\n');
+        const newQueryText = [headline, ...textBlocks].join('\n');
+
+        if (newQueryText?.length > 1) {
+          queryText = newQueryText;
+        }
 
         console.log('Query text:', queryText);
 
