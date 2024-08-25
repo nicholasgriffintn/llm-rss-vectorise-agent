@@ -1,8 +1,26 @@
 import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
 
-function stripHtmlTags(html: string): string {
-  return html.replace(/<\/?[^>]+(>|$)/g, '');
+function stripHtmlTagsAndDecode(html: string): string {
+  // Strip HTML tags
+  const text = html.replace(/<\/?[^>]+(>|$)/g, '');
+
+  // Decode HTML entities
+  return text
+    .replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(dec);
+    })
+    .replace(/&([a-zA-Z]+);/g, (match, entity) => {
+      const entities: { [key: string]: string } = {
+        amp: '&',
+        lt: '<',
+        gt: '>',
+        quot: '"',
+        apos: "'",
+        // Add more entities if needed
+      };
+      return entities[entity] || match;
+    });
 }
 
 export const SearchResultItem = ({
@@ -27,7 +45,7 @@ export const SearchResultItem = ({
     </a>
     {result.metadata.description && (
       <p className="text-sm text-muted-foreground">
-        {stripHtmlTags(result.metadata.description)}
+        {stripHtmlTagsAndDecode(result.metadata.description)}
       </p>
     )}
     <div className="flex flex-wrap justify-center gap-2 mt-4">
