@@ -94,9 +94,6 @@ export default function Index() {
                 </ul>
               </li>
               <li className="text-sm text-left">
-                Display images on the results.
-              </li>
-              <li className="text-sm text-left">
                 Add a summarise modal and method that uses AI to summarise the
                 article.
                 <ul className="list-disc ml-4">
