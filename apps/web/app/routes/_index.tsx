@@ -66,7 +66,7 @@ export default function Index() {
       <div className="w-full max-w-3xl py-4 px-4 sm:px-6 lg:px-8 m-auto items-center text-center">
         <div
           className={`transition-all duration-500 ease-in-out ${
-            hasSearched ? 'mt-8' : 'mt-[15vh]'
+            hasSearched ? 'mt-8' : 'mt-[5vh] lg:mt-[15vh]'
           }`}
         >
           {isIntroVisible && <IntroSection hasSearched={hasSearched} />}

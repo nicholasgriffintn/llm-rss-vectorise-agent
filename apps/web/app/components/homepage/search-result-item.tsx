@@ -1,22 +1,20 @@
+import { Fragment } from 'react';
+
 import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
+import { RenderDate } from '../text/date';
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
-  return date.toLocaleDateString(undefined, options);
-}
+import { Fragment } from 'react';
 
 function stripHtmlTagsAndDecode(html: string): string {
-  // Strip HTML tags
-  const text = html.replace(/<\/?[^>]+(>|$)/g, '');
+  // Replace paragraph tags with new lines
+  const textWithNewLines = html.replace(/<\/?p[^>]*>/g, '\n');
+
+  // Strip remaining HTML tags
+  const text = textWithNewLines.replace(/<\/?[^>]+(>|$)/g, '');
 
   // Decode HTML entities
-  return text
+  const decodedText = text
     .replace(/&#(\d+);/g, (match, dec) => {
       return String.fromCharCode(dec);
     })
@@ -31,6 +29,49 @@ function stripHtmlTagsAndDecode(html: string): string {
       };
       return entities[entity] || match;
     });
+
+  // Remove leading and trailing new lines and ensure no more than one consecutive new line
+  return decodedText.trim().replace(/\n+/g, '\n');
+}
+
+function renderTextWithNewLines(text: string, url: string): JSX.Element {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const continueReadingRegex = /Continue reading\.\.\./g;
+
+  return (
+    <>
+      {text.split('\n').map((line, index) => (
+        <Fragment key={index}>
+          {line
+            .split(urlRegex)
+            .map((part, i) =>
+              urlRegex.test(part) ? (
+                <a
+                  key={i}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {part}
+                </a>
+              ) : (
+                part
+              )
+            )
+            .map((part, i) =>
+              continueReadingRegex.test(part as string) ? (
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                  Continue reading...
+                </a>
+              ) : (
+                part
+              )
+            )}
+          <br />
+        </Fragment>
+      ))}
+    </>
+  );
 }
 
 export const SearchResultItem = ({
@@ -55,8 +96,8 @@ export const SearchResultItem = ({
       </span>
     )}
     <img
-      src="https://via.placeholder.com/150"
-      alt="Placeholder"
+      src="/assets/placeholders/150x150.png"
+      alt=""
       className="w-full h-16 object-cover rounded-t-lg"
     />
     <div className="p-4">
@@ -64,7 +105,7 @@ export const SearchResultItem = ({
         href={result.metadata.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-lg font-bold"
+        className="text-lg font-bold title"
       >
         {result.metadata.title}
       </a>
@@ -76,18 +117,23 @@ export const SearchResultItem = ({
         )}
         {result.metadata.published && (
           <span className="text-xs text-muted-foreground">
-            Published: {formatDate(result.metadata.published)}
+            Published:{' '}
+            <RenderDate date={result.metadata.published} timeZone="UTC" />
           </span>
         )}
         {result.metadata.updated && (
           <span className="text-xs text-muted-foreground">
-            Updated: {formatDate(result.metadata.updated)}
+            Updated:{' '}
+            <RenderDate date={result.metadata.updated} timeZone="UTC" />
           </span>
         )}
       </div>
       {result.metadata.description && (
         <p className="text-sm text-muted-foreground">
-          {stripHtmlTagsAndDecode(result.metadata.description)}
+          {renderTextWithNewLines(
+            stripHtmlTagsAndDecode(result.metadata.description),
+            result.metadata.url
+          )}
         </p>
       )}
       <div className="flex flex-wrap justify-center gap-2 mt-4">
