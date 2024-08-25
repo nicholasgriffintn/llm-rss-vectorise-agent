@@ -27,6 +27,8 @@ export async function handleQuery(userQuery: string, env: Env) {
     typeof process !== 'undefined' &&
     process?.env?.ENVIRONMENT === 'development'
   ) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
     return matchesFixture;
   }
 

@@ -1,13 +1,14 @@
 import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { useState, useCallback } from 'react';
 import { json } from '@remix-run/cloudflare';
-import { useLoaderData, useSubmit } from '@remix-run/react';
+import { useLoaderData, useSubmit, useNavigation } from '@remix-run/react';
 
 import { handleQuery } from '../lib/ai';
 import { IntroSection } from '../components/homepage/intro';
 import { SearchForm } from '../components/homepage/form';
 import { ExampleSearches } from '../components/homepage/examples';
 import { SearchResults } from '../components/homepage/search-results';
+import { LoadingSpinner } from '../components/loading/spinner';
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,6 +35,8 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
+  const { state } = useNavigation();
+
   const data = useLoaderData<typeof loader>();
   const submit = useSubmit();
 
@@ -74,7 +77,13 @@ export default function Index() {
           </div>
           {isIntroVisible && <ExampleSearches handleSearch={handleSearch} />}
         </div>
-        {hasSearched && <SearchResults data={data?.result || {}} />}
+        {state !== 'idle' ? (
+          <LoadingSpinner className="mt-8">
+            <span className="ml-2">Loading results...</span>
+          </LoadingSpinner>
+        ) : (
+          <>{hasSearched && <SearchResults data={data?.result || {}} />}</>
+        )}
       </div>
     </div>
   );
