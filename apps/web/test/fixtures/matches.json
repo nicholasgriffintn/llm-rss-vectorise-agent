@@ -76,33 +76,68 @@
       "score": 0.597843151
     },
     {
+      "id": "https://www.theguardian.com/money/gallery/2024/aug/23/homes-for-",
+      "metadata": {
+        "url": "https://www.theguardian.com/money/gallery/2024/aug/23/homes-for-sale-with-or-on-islands-around-the-uk-in-pictures",
+        "title": "Homes for sale with or on islands around the UK – in pictures",
+        "description": "<p>From a sprawling 180-hectare island with seven properties in Scotland to a six-bedroom home in a south-west London artistic community</p> <a href=\"https://www.theguardian.com/money/gallery/2024/aug/23/homes-for-sale-with-or-on-islands-around-the-uk-in-pictures\">Continue reading...</a>",
+        "published": "Fri, 23 Aug 2024 06:07:26 GMT",
+        "author": "Anna White",
+        "thumbnail": null,
+        "media_0": {
+          "url": "https://i.guim.co.uk/img/media/2a4439f08b666483f0a4981267a49ba68901aaeb/0_116_1882_1129/master/1882.jpg?width=140&quality=85&auto=format&fit=max&s=e06aec9fcbfa5a999daef0861029e27c",
+          "width": "140"
+        },
+        "media_1": {
+          "url": "https://i.guim.co.uk/img/media/2a4439f08b666483f0a4981267a49ba68901aaeb/0_116_1882_1129/master/1882.jpg?width=460&quality=85&auto=format&fit=max&s=22d88125bc916bf5fb22703792952436",
+          "width": "460"
+        },
+        "category_0": {
+          "url": "https://www.theguardian.com/uk/scotland",
+          "label": "Scotland"
+        },
+        "category_1": {
+          "url": "https://www.theguardian.com/money/money",
+          "label": "Money"
+        },
+        "category_2": {
+          "url": "https://www.theguardian.com/uk-news/england",
+          "label": "England"
+        },
+        "category_3": {
+          "url": "https://www.theguardian.com/money/property",
+          "label": "Property"
+        },
+        "category_4": {
+          "url": "https://www.theguardian.com/lifeandstyle/lifeandstyle",
+          "label": "Life and style"
+        },
+        "category_5": {
+          "url": "https://www.theguardian.com/money/consumer-affairs",
+          "label": "Consumer affairs"
+        },
+        "category_6": {
+          "url": "https://www.theguardian.com/uk/uk",
+          "label": "UK news"
+        }
+      },
+      "score": 0.890375838
+    },
+    {
       "id": "https://www.theguardian.com/world/article/2024/aug/23/record-bre",
       "metadata": {
         "url": "https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt",
         "title": "Like ‘using Lego blocks’: record-breaking tunnel connecting Denmark and Germany takes shape",
         "description": "<p>Tunnel being built with innovative engineering is final step of project to connect Denmark – and the Nordics as a whole – to the rest of Europe</p><p>From the quayside of the Danish town of Rødbyhavn, the Baltic sea sparkling in the sunshine, Germany is so close you can see it – a cluster of wind turbines on the horizon.</p><p>The German town of Puttgarden is just 11 miles away, but getting there involves either a 45-minute ferry journey – plus time for embarking and disembarking – or a six-hour drive taking in much of Denmark.</p> <a href=\"https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt\">Continue reading...</a>",
         "published": "Fri, 23 Aug 2024 09:55:45 GMT",
-        "media": {
-          "media_0": {
-            "url": "https://i.guim.co.uk/img/media/416ce860b73ef1714b53930e172105aae0a52a29/0_6_7848_4709/master/7848.jpg?width=1900&dpr=2&s=none",
-            "type": "image",
-            "width": 1900,
-            "height": 1140
-          }
+        "media_0": {
+          "url": "https://i.guim.co.uk/img/media/416ce860b73ef1714b53930e172105aae0a52a29/0_6_7848_4709/master/7848.jpg?width=1900&dpr=2&s=none",
+          "type": "image",
+          "width": 1900,
+          "height": 1140
         }
       },
       "score": 0.591936666
-    },
-    {
-      "id": "66bbe76e562898e29576f2f4",
-      "metadata": {
-        "url": "https://www.wired.com/story/hydroflyer-electric-hydrofoil-test-ride/",
-        "title": "Hydroflyer's $15K Electric Hydrofoil Is the Mountain Bike of the Sea",
-        "description": "The Hydroflyer, an electric, propeller-driven hydrofoil with bicycle-style handlebars is the superior way to glide across the waves, if you can afford it.",
-        "published": "Fri, 23 Aug 2024 13:30:00 +0000",
-        "image": null
-      },
-      "score": 0.589904216
     },
     {
       "id": "https://news.ycombinator.com/item?id=41329505",

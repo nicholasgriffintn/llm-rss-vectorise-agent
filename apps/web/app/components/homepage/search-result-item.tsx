@@ -118,6 +118,10 @@ export const SearchResultItem = ({
         height?: number;
         credit?: string;
       };
+      [key: string]: {
+        url?: string;
+        label: string;
+      };
     };
     score: number;
   };
@@ -141,6 +145,11 @@ export const SearchResultItem = ({
     null;
 
   const shouldCover = imageWidth && imageHeight && imageWidth > imageHeight;
+
+  // Extract categories
+  const categories = Object.keys(result.metadata)
+    .filter((key) => key.startsWith('category_'))
+    .map((key) => result.metadata[key]);
 
   return (
     <li>
@@ -229,6 +238,28 @@ export const SearchResultItem = ({
                   )}
                 </p>
               )}
+              {categories.length ? (
+                <div className="flex flex-wrap justify-left gap-2 mt-2">
+                  <strong>Categories:</strong>
+                  {categories.map((category, index) =>
+                    category.url ? (
+                      <a
+                        key={index}
+                        href={category.url}
+                        className="category-badge"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {category.label}
+                      </a>
+                    ) : (
+                      <span key={index} className="category-badge">
+                        {category.label}
+                      </span>
+                    )
+                  )}
+                </div>
+              ) : null}
             </CardContent>
             <CardFooter className="flex flex-wrap justify-end space-x-2 space-y-2 sm:space-y-0 bg-muted/50 py-2">
               <Modal
