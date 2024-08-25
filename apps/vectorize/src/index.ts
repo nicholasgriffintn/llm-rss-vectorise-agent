@@ -1,6 +1,7 @@
 import { handleInsert } from './handlers/insert';
 import { handleQueue } from './handlers/queue';
 import { handleQuery } from './handlers/query';
+import { handleReplay } from './handlers/replay';
 import type { Env } from './types';
 import { initializePrisma } from './lib/db';
 
@@ -26,6 +27,11 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
 
   if (path === '/insert') {
     const queued = await handleInsert(env);
+    return Response.json(queued);
+  }
+
+  if (path === '/replay') {
+    const queued = await handleReplay(env);
     return Response.json(queued);
   }
 
