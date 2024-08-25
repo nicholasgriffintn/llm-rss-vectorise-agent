@@ -8,7 +8,11 @@
         "title": "Secrets of hovering kestrels to help drones beat city winds",
         "description": "Researchers hope they could inspire new drone and plane designs able to better cope with turbulence.",
         "published": "Thu, 08 Aug 2024 13:53:17 GMT",
-        "image": null
+        "thumbnail": {
+          "url": "https://ichef.bbci.co.uk/news/976/cpsprodpb/acec/live/3b4c1b30-559b-11ef-aebc-6de4d31bf5cd.jpg",
+          "width": 1024,
+          "height": 576
+        }
       },
       "score": 0.617957476
     },
@@ -64,7 +68,14 @@
         "title": "Like ‘using Lego blocks’: record-breaking tunnel connecting Denmark and Germany takes shape",
         "description": "<p>Tunnel being built with innovative engineering is final step of project to connect Denmark – and the Nordics as a whole – to the rest of Europe</p><p>From the quayside of the Danish town of Rødbyhavn, the Baltic sea sparkling in the sunshine, Germany is so close you can see it – a cluster of wind turbines on the horizon.</p><p>The German town of Puttgarden is just 11 miles away, but getting there involves either a 45-minute ferry journey – plus time for embarking and disembarking – or a six-hour drive taking in much of Denmark.</p> <a href=\"https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt\">Continue reading...</a>",
         "published": "Fri, 23 Aug 2024 09:55:45 GMT",
-        "image": null
+        "media": [
+          {
+            "url": "https://i.guim.co.uk/img/media/416ce860b73ef1714b53930e172105aae0a52a29/0_6_7848_4709/master/7848.jpg?width=1900&dpr=2&s=none",
+            "type": "image",
+            "width": 1900,
+            "height": 1140
+          }
+        ]
       },
       "score": 0.591936666
     },

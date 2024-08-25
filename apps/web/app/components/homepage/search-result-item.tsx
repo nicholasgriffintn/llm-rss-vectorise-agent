@@ -106,6 +106,18 @@ export const SearchResultItem = ({
       author?: string;
       published?: string;
       updated?: string;
+      thumbnail?: {
+        url: string;
+        width?: number;
+        height?: number;
+      };
+      media?: {
+        url: string;
+        type?: string;
+        width?: number;
+        height?: number;
+        credit?: string;
+      }[];
     };
     score: number;
   };
@@ -113,6 +125,11 @@ export const SearchResultItem = ({
 }) => {
   const matchPercentage = Math.round(result.score * 100);
   const badgeColor = getBadgeColor(matchPercentage);
+
+  const imageUrl =
+    result.metadata?.thumbnail?.url ||
+    result.metadata?.media?.[0]?.url ||
+    '/assets/placeholder.svg';
 
   return (
     <li>
@@ -131,7 +148,7 @@ export const SearchResultItem = ({
           >
             <div className="relative h-full">
               <img
-                src="/assets/placeholder.svg"
+                src={imageUrl}
                 alt=""
                 className="w-full h-full object-cover"
               />
