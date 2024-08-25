@@ -32,3 +32,15 @@ a.title:hover {
     order: -1; /* Move the image to the top on mobile */
   }
 }
+
+.image-container--left {
+  order: 0;
+}
+
+.image-container--right {
+  order: 1;
+}
+
+.image-container--top {
+  order: -1;
+}
