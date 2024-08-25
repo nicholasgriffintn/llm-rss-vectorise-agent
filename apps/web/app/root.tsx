@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main className="w-full">{children}</main>
         </div>
         <ScrollRestoration />
         <Scripts />
