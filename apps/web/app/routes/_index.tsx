@@ -27,19 +27,19 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
 
   if (query) {
     const result = await handleQuery(query, env);
-    return json({ result });
+    return json({ result, query, hasSearched: true, isIntroVisible: false });
   }
 
-  return json([]);
+  return json({ result: [], query, hasSearched: false, isIntroVisible: true });
 }
 
 export default function Index() {
-  const [query, setQuery] = useState('');
-  const [hasSearched, setHasSearched] = useState(false);
-  const [isIntroVisible, setIsIntroVisible] = useState(true);
-
   const data = useLoaderData<typeof loader>();
   const submit = useSubmit();
+
+  const [query, setQuery] = useState(data.query || '');
+  const [hasSearched, setHasSearched] = useState(data.hasSearched);
+  const [isIntroVisible, setIsIntroVisible] = useState(data.isIntroVisible);
 
   const handleSearch = useCallback(
     (searchQuery: string) => {
@@ -74,7 +74,7 @@ export default function Index() {
           </div>
           {isIntroVisible && <ExampleSearches handleSearch={handleSearch} />}
         </div>
-        {hasSearched && <SearchResults data={data} />}
+        {hasSearched && <SearchResults data={data?.result || {}} />}
       </div>
     </div>
   );
