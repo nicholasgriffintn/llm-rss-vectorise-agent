@@ -85,15 +85,34 @@ async function processRSSMessage(
   const stories = await fetchRSSFeed(id);
   const allEntries = stories.entries || [];
 
+  // Generate IDs for all entries
+  const entryIds = allEntries.map((entry) => generateId(entry));
+
+  // Fetch all existing entries from the database in one query
+  const existingEntries = await prisma.item.findMany({
+    where: {
+      id: { in: entryIds },
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  // Create a map of existing entries for quick lookup
+  const existingEntriesMap = new Map(
+    existingEntries.map((entry) => [entry.id, entry.status])
+  );
+
   const inserted: any[] = [];
 
   for (const entry of allEntries) {
     const entryId = generateId(entry);
-    const existing = await prisma.item.findUnique({ where: { id: entryId } });
+    const existingStatus = existingEntriesMap.get(entryId);
 
-    if (existing?.status === 'processed' || existing?.status === 'queued') {
+    if (existingStatus === 'processed' || existingStatus === 'queued') {
       logger.log(
-        existing.status === 'processed' ? 'Already inserted' : 'Already queued',
+        existingStatus === 'processed' ? 'Already inserted' : 'Already queued',
         entry.title
       );
       continue;
