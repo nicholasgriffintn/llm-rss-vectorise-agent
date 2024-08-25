@@ -168,11 +168,11 @@ async function processEntryMessage(
       const url = new URL(metadata.url).toString();
       // TODO: Expand to other sites and sections
       const isBBCNews =
-        url.startsWith('https://www.bbc.co.uk/news/') ||
-        url.startsWith('https://www.bbc.com/news/');
+        url.startsWith('https://www.bbc.co.uk/news/articles/') ||
+        url.startsWith('https://www.bbc.com/news/articles/');
       const isBBCSport =
-        url.startsWith('https://www.bbc.co.uk/sport/') ||
-        url.startsWith('https://www.bbc.com/sport/');
+        url.startsWith('https://www.bbc.co.uk/sport/articles/') ||
+        url.startsWith('https://www.bbc.com/sport/articles/');
 
       if (isBBCNews || isBBCSport) {
         logger.log('Fetching', url);
@@ -201,6 +201,7 @@ async function processEntryMessage(
         await page.goto(bbcAmpUrl);
 
         // TODO: This isn't working, I don't know why, I think it's because Browser Worker sits outside the Worker?
+        // TODO: Getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"
         let headline = null;
         try {
           headline = await page.$eval('h1', (el) => el.textContent || '');
