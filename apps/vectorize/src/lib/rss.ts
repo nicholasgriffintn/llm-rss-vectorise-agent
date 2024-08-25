@@ -95,6 +95,29 @@ export function parseContent(entry: any): string {
  * @returns An object containing the metadata.
  */
 export function extractMetadata(entry: any): Record<string, any> {
+  const mediaContent = entry['media:content']?.length
+    ? entry['media:content'].reduce((acc, content, index) => {
+        acc[`media_${index}`] = {
+          url: content?.['@_url'],
+          type: content?.['@_type'],
+          width: content?.['@_width'],
+          height: content?.['@_height'],
+          credit: content?.['@_credit'],
+        };
+        return acc;
+      }, {})
+    : null;
+
+  const categoriesContent = entry.content?.length
+    ? entry.content.reduce((acc, c, index) => {
+        acc[`category_${index}`] = {
+          url: c?.['@_domain'],
+          label: c?.['#text'],
+        };
+        return acc;
+      }, {})
+    : {};
+
   return {
     url: entry.link?.['@_href'] || entry.link,
     title: entry.title,
@@ -110,25 +133,8 @@ export function extractMetadata(entry: any): Record<string, any> {
           height: entry['media:thumbnail']?.['@_height'],
         }
       : null,
-    media: entry['media:content']?.length
-      ? entry?.['media:content'].map((content) => {
-          return {
-            url: content?.['@_url'],
-            type: content?.['@_type'],
-            width: content?.['@_width'],
-            height: content?.['@_height'],
-            credit: content?.['@_credit'],
-          };
-        })
-      : null,
-    categories: entry.content?.length
-      ? entry.content.map((c) => {
-          return {
-            url: c?.['@_domain'],
-            label: c?.['#text'],
-          };
-        })
-      : [],
+    media: mediaContent,
+    categories: categoriesContent,
     copyright: entry.copyright,
   };
 }
