@@ -197,22 +197,20 @@ async function processEntryMessage(
         sessionId = browser.sessionId();
 
         const page = await browser.newPage();
-        await page.goto(url);
+        const bbcAmpUrl = `${url}.amp`;
+        await page.goto(bbcAmpUrl);
 
-        // TODO: This isn't working, I don't know why.
+        // TODO: This isn't working, I don't know why, I think it's because Browser Worker sits outside the Worker?
         let headline = null;
         try {
-          headline = await page.$eval(
-            '[headline-block]',
-            (el) => el.textContent || ''
-          );
+          headline = await page.$eval('h1', (el) => el.textContent || '');
         } catch (e) {
           logger.error('Headline element not found');
         }
 
         let textBlocks: unknown[] = [];
         try {
-          textBlocks = await page.$$eval('[text-block]', (els) =>
+          textBlocks = await page.$$eval('main p', (els) =>
             els.map((el) => el.textContent || '')
           );
         } catch (e) {
