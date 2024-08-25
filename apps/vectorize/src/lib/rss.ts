@@ -94,20 +94,39 @@ export function parseContent(entry: any): string {
  */
 export function extractMetadata(entry: any): Record<string, any> {
   return {
-    url: entry?.link?.['@_href'] || entry.link,
+    url: entry.link?.['@_href'] || entry.link,
     title: entry.title,
     description: entry.description,
-    published: entry.published || entry.pubDate || entry.date,
+    published:
+      entry.published || entry.pubDate || entry.date || entry['dc:date'],
     updated: entry.updated,
-    author: entry.author?.name,
-    image: entry.image
+    author: entry.author?.name || entry['dc:creator'],
+    thumbnail: entry['media:thumbnail']
       ? {
-          url: entry.image?.url,
-          title: entry.image?.title,
-          link: entry.image?.link,
+          url: entry['media:thumbnail']?.['@_url'],
+          width: entry['media:thumbnail']?.['@_width'],
+          height: entry['media:thumbnail']?.['@_height'],
         }
       : null,
-    thumbnail: entry.thumbnail,
+    media: entry['media:content']?.length
+      ? entry?.['media:content'].map((content) => {
+          return {
+            url: content?.['@_url'],
+            type: content?.['@_type'],
+            width: content?.['@_width'],
+            height: content?.['@_height'],
+            credit: content?.['@_credit'],
+          };
+        })
+      : null,
+    categories: entry.content?.length
+      ? entry.content.map((c) => {
+          return {
+            url: c?.['@_domain'],
+            label: c?.['#text'],
+          };
+        })
+      : [],
     copyright: entry.copyright,
   };
 }
