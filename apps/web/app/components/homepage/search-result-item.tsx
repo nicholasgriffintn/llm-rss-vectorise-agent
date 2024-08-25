@@ -131,8 +131,14 @@ export const SearchResultItem = ({
     result.metadata?.['media_0']?.url ||
     null;
 
-  const imageWidth = result.metadata?.thumbnail?.width || null;
-  const imageHeight = result.metadata?.thumbnail?.height || null;
+  const imageWidth =
+    result.metadata?.thumbnail?.width ||
+    result.metadata?.['media_0']?.width ||
+    null;
+  const imageHeight =
+    result.metadata?.thumbnail?.height ||
+    result.metadata?.['media_0']?.height ||
+    null;
 
   const shouldCover = imageWidth && imageHeight && imageWidth > imageHeight;
 
