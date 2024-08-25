@@ -5,6 +5,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteError,
+  isRouteErrorResponse,
 } from '@remix-run/react';
 
 import './tailwind.css';
@@ -65,11 +66,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const ErrorBoundary = () => {
+export function ErrorBoundary() {
   const error = useRouteError();
-  console.error(error);
-  return <div>Something went wrong</div>;
-};
+
+  return (
+    <div className="flex flex-col">
+      <div className="w-full max-w-3xl py-4 px-4 sm:px-6 lg:px-8 m-auto items-center text-center">
+        <h1 className="text-2xl font-bold text-black">Something went wrong</h1>
+        <p className="text-lg text-black mt-2">
+          {isRouteErrorResponse(error)
+            ? error.statusText
+            : 'An unexpected error occurred.'}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-black text-white rounded"
+        >
+          Reload Page
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   return <Outlet />;

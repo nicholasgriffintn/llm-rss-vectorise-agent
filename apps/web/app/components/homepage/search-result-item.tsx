@@ -115,6 +115,7 @@ export const SearchResultItem = ({
             Author: {result.metadata.author}
           </span>
         )}
+        {document.fhfhs}
         {result.metadata.published && (
           <span className="text-xs text-muted-foreground">
             Published:{' '}
