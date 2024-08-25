@@ -67,6 +67,6 @@ async function getQueryVector(
 async function getMatches(queryVector: EmbeddingResponse, env: Env) {
   return env.VECTORIZE.query(queryVector.data[0], {
     topK: 15,
-    returnMetadata: true,
+    returnMetadata: 'indexed',
   });
 }
