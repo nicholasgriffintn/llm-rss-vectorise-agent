@@ -118,35 +118,28 @@ export const SearchResultItem = ({
     <li>
       <Card className="overflow-hidden">
         <div
-          className={`flex ${
-            imagePosition === 'top' ? 'flex-col' : 'flex-row'
+          className={`flex flex-col ${
+            imagePosition === 'top' ? 'sm:flex-col' : 'sm:flex-row'
           } h-full`}
         >
-          {imagePosition === 'left' && (
-            <div className="sm:w-1/3 h-48 sm:h-auto">
-              <div className="relative h-full">
-                <img
-                  src="/assets/placeholder.svg"
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          <div
+            className={`image-container image-container--${imagePosition} ${
+              imagePosition === 'left' ? 'sm:w-1/3' : 'w-full'
+            } ${imagePosition === 'right' ? 'sm:w-1/4' : ''} ${
+              imagePosition === 'top' ? 'h-24 sm:h-48' : 'h-24 sm:h-auto'
+            }`}
+          >
+            <div className="relative h-full">
+              <img
+                src="/assets/placeholder.svg"
+                alt=""
+                className="w-full h-full object-cover"
+              />
             </div>
-          )}
-          {imagePosition === 'top' && (
-            <div className="w-full h-24">
-              <div className="relative h-full">
-                <img
-                  src="/assets/placeholder.svg"
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          )}
+          </div>
           <div
             className={`flex flex-col ${
-              imagePosition === 'right' ? 'sm:w-2/3' : 'w-full'
+              imagePosition === 'right' ? 'sm:w-3/4' : 'w-full'
             }`}
           >
             <CardHeader className="pb-2">
@@ -242,17 +235,6 @@ export const SearchResultItem = ({
               </Modal>
             </CardFooter>
           </div>
-          {imagePosition === 'right' && (
-            <div className="sm:w-1/3 h-48 sm:h-auto">
-              <div className="relative h-full">
-                <img
-                  src="/assets/placeholder.svg"
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          )}
         </div>
       </Card>
     </li>

@@ -26,3 +26,9 @@ a.title:hover {
   padding-bottom: constant(safe-area-inset-bottom, 20px); /* Older iOS versions */
   padding-bottom: env(safe-area-inset-bottom, 20px); /* Modern browsers */
 }
+
+@media (max-width: 640px) {
+  .image-container {
+    order: -1; /* Move the image to the top on mobile */
+  }
+}
