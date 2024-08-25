@@ -1,6 +1,16 @@
 import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+  return date.toLocaleDateString(undefined, options);
+}
+
 function stripHtmlTagsAndDecode(html: string): string {
   // Strip HTML tags
   const text = html.replace(/<\/?[^>]+(>|$)/g, '');
@@ -31,6 +41,9 @@ export const SearchResultItem = ({
       title: string;
       description: string;
       url: string;
+      author?: string;
+      published?: string;
+      updated?: string;
     };
   };
 }) => (
@@ -43,6 +56,23 @@ export const SearchResultItem = ({
     >
       {result.metadata.title}
     </a>
+    <div className="flex flex-wrap justify-center gap-2 mb-2">
+      {result.metadata.author && (
+        <span className="text-xs text-muted-foreground">
+          Author: {result.metadata.author}
+        </span>
+      )}
+      {result.metadata.published && (
+        <span className="text-xs text-muted-foreground">
+          Published: {formatDate(result.metadata.published)}
+        </span>
+      )}
+      {result.metadata.updated && (
+        <span className="text-xs text-muted-foreground">
+          Updated: {formatDate(result.metadata.updated)}
+        </span>
+      )}
+    </div>
     {result.metadata.description && (
       <p className="text-sm text-muted-foreground">
         {stripHtmlTagsAndDecode(result.metadata.description)}
