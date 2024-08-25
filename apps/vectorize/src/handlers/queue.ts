@@ -126,7 +126,20 @@ async function processRSSMessage(
       id: entryId,
       data: { text: parsedString, metadata },
     });
-    await updateItemStatus(prisma, entryId, 'queued');
+    await prisma.item.upsert({
+      where: { id },
+      update: {
+        status: 'queued',
+        text: parsedString,
+        metadata: JSON.stringify(metadata),
+      },
+      create: {
+        id,
+        status: 'queued',
+        text: parsedString,
+        metadata: JSON.stringify(metadata),
+      },
+    });
 
     inserted.push({ id: entryId, status: 'queued' });
   }
@@ -156,6 +169,12 @@ async function processEntryMessage(
     logger.log('No text for', id);
     return null;
   }
+
+  await prisma.item.upsert({
+    where: { id },
+    update: { status: 'queued' },
+    create: { id, status: 'queued' },
+  });
 
   let queryText = parsedString;
   // TODO: Make this work, getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"

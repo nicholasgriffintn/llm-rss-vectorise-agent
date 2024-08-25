@@ -9,7 +9,7 @@
     "wrangler": "wrangler",
     "db:init": "npx wrangler d1 migrations create llm-rss-vectorise-agent init",
     "db:migrate": "npx wrangler d1 migrations apply llm-rss-vectorise-agent",
-    "db:prisma:migrate": "npx prisma migrate diff --script --from-empty --to-schema-datamodel ./prisma/schema.prisma",
+    "db:prisma:migrate": "npx prisma migrate diff --script --from-schema-datamodel ./prisma/schema.prisma --to-migrations ./prisma/migrations",
     "db:prisma:generate": "npx prisma generate"
   },
   "devDependencies": {

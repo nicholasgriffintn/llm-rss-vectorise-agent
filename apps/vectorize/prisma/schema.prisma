@@ -16,4 +16,6 @@ model item {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   status       String
+  text         String?
+  metadata     String?
 }
