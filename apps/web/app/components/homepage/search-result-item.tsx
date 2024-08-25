@@ -37,8 +37,11 @@ function stripHtmlTagsAndDecode(html: string): string {
       return entities[entity] || match;
     });
 
+  // Remove lines starting with "Points:" or "# Comments:"
+  const cleanedText = decodedText.replace(/^(Points:|# Comments:).*\n?/gm, '');
+
   // Remove leading and trailing new lines and ensure no more than one consecutive new line
-  return decodedText.trim().replace(/\n+/g, '\n');
+  return cleanedText.trim().replace(/\n+/g, '\n');
 }
 
 function renderTextWithNewLines(text: string, url: string): JSX.Element {
