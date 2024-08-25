@@ -1,0 +1,170 @@
+{
+  "count": 15,
+  "matches": [
+    {
+      "id": "https://www.bbc.com/news/articles/c89wlnz1nzko",
+      "metadata": {
+        "url": "https://www.bbc.com/news/articles/c89wlnz1nzko",
+        "title": "Secrets of hovering kestrels to help drones beat city winds",
+        "description": "Researchers hope they could inspire new drone and plane designs able to better cope with turbulence.",
+        "published": "Thu, 08 Aug 2024 13:53:17 GMT",
+        "image": null
+      },
+      "score": 0.617957476
+    },
+    {
+      "id": "https://www.bbc.co.uk/sounds/play/w3ct5wm8",
+      "metadata": {
+        "url": "https://www.bbc.co.uk/sounds/play/w3ct5wm8",
+        "title": "Tech Life: Bionic arms and robotic thumbs",
+        "description": "This week Tech Life has a special programme about the technology of artificial limbs.",
+        "published": "Tue, 18 Jun 2024 19:30:00 GMT",
+        "image": null
+      },
+      "score": 0.613470031
+    },
+    {
+      "id": "https://www.bbc.co.uk/news/education-49279219",
+      "metadata": {
+        "url": "https://www.bbc.co.uk/news/education-49279219",
+        "title": "What are BTecs and how are they graded?",
+        "description": "Hundreds of thousands of students do vocational qualifications known as BTecs every year.",
+        "published": "Thu, 22 Aug 2024 10:09:34 GMT",
+        "image": null
+      },
+      "score": 0.605686226
+    },
+    {
+      "id": "https://www.bbc.com/news/articles/cd1646ewzleo",
+      "metadata": {
+        "url": "https://www.bbc.com/news/articles/cd1646ewzleo",
+        "title": "The mind-bending mirrors behind advanced technology",
+        "description": "Huge, tiny or incredibly flat, advanced mirrors are essential to high-tech machines.",
+        "published": "Mon, 19 Aug 2024 23:02:06 GMT",
+        "image": null
+      },
+      "score": 0.599839765
+    },
+    {
+      "id": "https://www.bbc.co.uk/sounds/play/w3ct5wm7",
+      "metadata": {
+        "url": "https://www.bbc.co.uk/sounds/play/w3ct5wm7",
+        "title": "Tech Life: Helping our animal friends",
+        "description": "This edition of Tech Life is all about animals and tech.",
+        "published": "Tue, 11 Jun 2024 19:30:00 GMT",
+        "image": null
+      },
+      "score": 0.597843151
+    },
+    {
+      "id": "https://www.theguardian.com/world/article/2024/aug/23/record-bre",
+      "metadata": {
+        "url": "https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt",
+        "title": "Like ‘using Lego blocks’: record-breaking tunnel connecting Denmark and Germany takes shape",
+        "description": "<p>Tunnel being built with innovative engineering is final step of project to connect Denmark – and the Nordics as a whole – to the rest of Europe</p><p>From the quayside of the Danish town of Rødbyhavn, the Baltic sea sparkling in the sunshine, Germany is so close you can see it – a cluster of wind turbines on the horizon.</p><p>The German town of Puttgarden is just 11 miles away, but getting there involves either a 45-minute ferry journey – plus time for embarking and disembarking – or a six-hour drive taking in much of Denmark.</p> <a href=\"https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt\">Continue reading...</a>",
+        "published": "Fri, 23 Aug 2024 09:55:45 GMT",
+        "image": null
+      },
+      "score": 0.591936666
+    },
+    {
+      "id": "66bbe76e562898e29576f2f4",
+      "metadata": {
+        "url": "https://www.wired.com/story/hydroflyer-electric-hydrofoil-test-ride/",
+        "title": "Hydroflyer's $15K Electric Hydrofoil Is the Mountain Bike of the Sea",
+        "description": "The Hydroflyer, an electric, propeller-driven hydrofoil with bicycle-style handlebars is the superior way to glide across the waves, if you can afford it.",
+        "published": "Fri, 23 Aug 2024 13:30:00 +0000",
+        "image": null
+      },
+      "score": 0.589904216
+    },
+    {
+      "id": "https://news.ycombinator.com/item?id=41329505",
+      "metadata": {
+        "url": "https://github.com/dpjudas/SurrealEngine",
+        "title": "SurrealEngine: Open-source reimplementation of Unreal Engine with playable UT99",
+        "description": "\n<p>Article URL: <a href=\"https://github.com/dpjudas/SurrealEngine\">https://github.com/dpjudas/SurrealEngine</a></p>\n<p>Comments URL: <a href=\"https://news.ycombinator.com/item?id=41329505\">https://news.ycombinator.com/item?id=41329505</a></p>\n<p>Points: 289</p>\n<p># Comments: 116</p>\n",
+        "published": "Fri, 23 Aug 2024 14:50:09 +0000",
+        "image": null
+      },
+      "score": 0.587933228
+    },
+    {
+      "id": "https://www.bbc.com/news/articles/c19km33k1mpo",
+      "metadata": {
+        "url": "https://www.bbc.com/news/articles/c19km33k1mpo",
+        "title": "Europe's Ariane-6 rocket blasts off on maiden flight",
+        "description": "After a successful launch, the upper-stage of the rocket goes on to experience an anomaly.",
+        "published": "Tue, 09 Jul 2024 23:56:16 GMT",
+        "image": null
+      },
+      "score": 0.581974545
+    },
+    {
+      "id": "66c525bdb7720fe1d4e665fd",
+      "metadata": {
+        "url": "https://www.wired.com/story/power-metal-green-economy-is-hungry-for-copper/",
+        "title": "The Green Economy Is Hungry for Copper—and People Are Stealing, Fighting, and Dying to Feed It",
+        "description": "With the possible exception of gold, no other metal has caused as much destruction as copper. In the coming years, we’ll need more of it than ever.",
+        "published": "Thu, 22 Aug 2024 10:00:00 +0000",
+        "image": null
+      },
+      "score": 0.580390483
+    },
+    {
+      "id": "66c3bd0d7e8f4ca98c1eee29",
+      "metadata": {
+        "url": "https://www.wired.com/story/ai-scientist-ubc-lab/",
+        "title": "An ‘AI Scientist’ Is Inventing and Running Its Own Experiments",
+        "description": "Letting programs learn through “open-ended” experimentation may unlock remarkable new capabilities, as well as new risks.",
+        "published": "Wed, 21 Aug 2024 16:00:00 +0000",
+        "image": null
+      },
+      "score": 0.580121355
+    },
+    {
+      "id": "https://news.ycombinator.com/item?id=41333011",
+      "metadata": {
+        "url": "https://arxiv.org/abs/2408.03146",
+        "title": "An exploration of Bluesky's public opening",
+        "description": "\n<p>Article URL: <a href=\"https://arxiv.org/abs/2408.03146\">https://arxiv.org/abs/2408.03146</a></p>\n<p>Comments URL: <a href=\"https://news.ycombinator.com/item?id=41333011\">https://news.ycombinator.com/item?id=41333011</a></p>\n<p>Points: 21</p>\n<p># Comments: 25</p>\n",
+        "published": "Fri, 23 Aug 2024 20:52:57 +0000",
+        "image": null
+      },
+      "score": 0.579504566
+    },
+    {
+      "id": "https://www.bbc.com/news/articles/cw9yzw4ywnpo",
+      "metadata": {
+        "url": "https://www.bbc.com/news/articles/cw9yzw4ywnpo",
+        "title": "Could reading instruction manuals become a thing of the past?",
+        "description": "AI can now read instruction manuals on behalf of the human user and give its advice.",
+        "published": "Wed, 07 Aug 2024 23:10:13 GMT",
+        "image": null
+      },
+      "score": 0.579239453
+    },
+    {
+      "id": "https://news.ycombinator.com/item?id=41331531",
+      "metadata": {
+        "url": "https://osf.io/preprints/osf/3ez9v",
+        "title": "Author-paid publication fees corrupt science and should be abandoned",
+        "description": "\n<p>Article URL: <a href=\"https://osf.io/preprints/osf/3ez9v\">https://osf.io/preprints/osf/3ez9v</a></p>\n<p>Comments URL: <a href=\"https://news.ycombinator.com/item?id=41331531\">https://news.ycombinator.com/item?id=41331531</a></p>\n<p>Points: 40</p>\n<p># Comments: 8</p>\n",
+        "published": "Fri, 23 Aug 2024 18:17:38 +0000",
+        "image": null
+      },
+      "score": 0.577136758
+    },
+    {
+      "id": "https://www.bbc.co.uk/sounds/play/w3ct5wmf",
+      "metadata": {
+        "url": "https://www.bbc.co.uk/sounds/play/w3ct5wmf",
+        "title": "Tech Life: Turning the racetrack electric",
+        "description": "We're at the Formula E season finale, exploring how the tech has advanced over 10 years.",
+        "published": "Tue, 23 Jul 2024 19:30:00 GMT",
+        "image": null
+      },
+      "score": 0.576363037
+    }
+  ]
+}

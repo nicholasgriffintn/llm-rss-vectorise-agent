@@ -6,6 +6,14 @@ import { useLoaderData, useSubmit, Form } from '@remix-run/react';
 
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../components/ui/dialog';
 import { handleQuery } from '../lib/ai';
 
 export const meta: MetaFunction = () => {
@@ -25,7 +33,6 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
   const query = url.searchParams.get('query');
 
   if (query) {
-    console.log('Getting results for query:', query);
     const result = await handleQuery(query, env);
 
     return json({ result });
@@ -42,7 +49,6 @@ export default function Index() {
   const [isIntroVisible, setIsIntroVisible] = useState(true);
 
   const data = useLoaderData<typeof loader>();
-  console.log(data);
   const submit = useSubmit();
 
   const handleSearch = useCallback(
@@ -148,6 +154,52 @@ export default function Index() {
                             {result.metadata.description}
                           </p>
                         ) : null}
+                        <div className="flex flex-wrap justify-center gap-2 mt-4">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                              >
+                                Summarise
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Summarise article</DialogTitle>
+                                <DialogDescription>
+                                  Use AI to generate a summary of the article.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="flex items-center space-x-2">
+                                Coming soon...
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                              >
+                                Analyse
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Analyse article</DialogTitle>
+                                <DialogDescription>
+                                  Use AI to analyse the article.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="flex items-center space-x-2">
+                                Coming soon...
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       </li>
                     ))}
                   </>

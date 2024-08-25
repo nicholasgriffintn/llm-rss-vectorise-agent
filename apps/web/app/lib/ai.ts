@@ -1,3 +1,5 @@
+import matchesFixture from '../../test/fixtures/matches.json';
+
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
 
 export const gatewayId = 'llm-rss-vectorise-agent';
@@ -19,6 +21,10 @@ export async function handleQuery(userQuery: string, env: Env) {
   if (!userQuery) {
     console.error('No query provided');
     return { count: 0, matches: [] };
+  }
+
+  if (process?.env.ENVIRONMENT === 'development') {
+    return matchesFixture;
   }
 
   const queryVector = await getQueryVector(userQuery, env);
