@@ -31,8 +31,8 @@ export async function updateItemStatus(
   const createData: any = { id, status };
 
   if (queryText) {
-    updateData.queryText = queryText;
-    createData.queryText = queryText;
+    updateData.text = queryText;
+    createData.text = queryText;
   }
 
   await prisma.item.upsert({

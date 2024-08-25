@@ -12,8 +12,8 @@ import {
 } from '../lib/db';
 import { generateVectors } from '../lib/ai';
 
-const BBC_NEWS_PREFIX = 'https://www.bbc.co.uk/news/articles/';
-const BBC_SPORT_PREFIX = 'https://www.bbc.co.uk/sport/articles/';
+const BBC_NEWS_PREFIX = 'https://www.bbc.com/news/articles/';
+const BBC_SPORT_PREFIX = 'https://www.bbc.com/sport/articles/';
 const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
 
 /**
