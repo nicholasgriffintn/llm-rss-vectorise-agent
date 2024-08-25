@@ -239,7 +239,7 @@ export const SearchResultItem = ({
                 </p>
               )}
               {categories.length ? (
-                <div className="flex flex-wrap justify-left gap-2 mt-2">
+                <div className="flex flex-wrap justify-left gap-2 mt-2 text-xs text-muted-foreground">
                   <strong>Categories:</strong>
                   {categories.map((category, index) =>
                     category.url ? (
