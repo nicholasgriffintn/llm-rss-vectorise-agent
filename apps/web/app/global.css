@@ -21,3 +21,8 @@ a.title:hover {
   -webkit-text-decoration: underline;
   text-decoration: underline;
 }
+
+.safe-area-padding {
+  padding-bottom: constant(safe-area-inset-bottom, 20px); /* Older iOS versions */
+  padding-bottom: env(safe-area-inset-bottom, 20px); /* Modern browsers */
+}
