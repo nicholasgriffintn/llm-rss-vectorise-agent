@@ -94,13 +94,9 @@ function getBadgeColor(score: number): string {
   }
 }
 
-function getRandomImagePosition(): string {
-  const positions = ['left', 'top', 'right'];
-  return positions[Math.floor(Math.random() * positions.length)];
-}
-
 export const SearchResultItem = ({
   result,
+  imagePosition = 'left',
 }: {
   result: {
     metadata: {
@@ -113,10 +109,10 @@ export const SearchResultItem = ({
     };
     score: number;
   };
+  imagePosition?: string;
 }) => {
   const matchPercentage = Math.round(result.score * 100);
   const badgeColor = getBadgeColor(matchPercentage);
-  const imagePosition = getRandomImagePosition();
 
   return (
     <li>

@@ -3,20 +3,50 @@ import { ArrowRight } from 'lucide-react';
 import { SearchResultItem } from './search-result-item';
 import { Button } from '../ui/button';
 
+const getImagePosition = (
+  index: number,
+  result: {
+    metadata: {
+      title: string;
+      description: string;
+      url: string;
+      author?: string;
+      published?: string;
+      updated?: string;
+    };
+    score: number;
+  }
+): string => {
+  const positions = ['left', 'top', 'right'];
+
+  // Use the length of the title and description to influence the position
+  const titleLength = result?.metadata?.title?.length || 0;
+  const descriptionLength = result?.metadata?.description?.length || 0;
+  const score = result?.score || 0;
+
+  // Generate a pseudo-random number based on the title and description lengths
+  const randomFactor =
+    (titleLength + descriptionLength + Math.round(score * 100) + index) %
+    positions.length;
+
+  return positions[randomFactor];
+};
+
 export const SearchResults = ({
   data,
 }: {
   data: {
     count: number;
     matches: {
-      title: string;
-      description: string;
-      url: string;
       metadata: {
         title: string;
         description: string;
         url: string;
+        author?: string;
+        published?: string;
+        updated?: string;
       };
+      score: number;
     }[];
   };
 }) => (
@@ -26,7 +56,11 @@ export const SearchResults = ({
       <ul className="space-y-4">
         {data?.matches?.length > 0 ? (
           data.matches.map((result, index) => (
-            <SearchResultItem key={index} result={result} />
+            <SearchResultItem
+              key={index}
+              result={result}
+              imagePosition={getImagePosition(index, result)}
+            />
           ))
         ) : (
           <p className="text-muted-foreground">Loading...</p>
