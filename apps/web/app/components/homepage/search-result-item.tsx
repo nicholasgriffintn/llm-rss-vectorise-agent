@@ -127,9 +127,7 @@ export const SearchResultItem = ({
   const badgeColor = getBadgeColor(matchPercentage);
 
   const imageUrl =
-    result.metadata?.thumbnail?.url ||
-    result.metadata?.media?.[0]?.url ||
-    '/assets/placeholder.svg';
+    result.metadata?.thumbnail?.url || result.metadata?.media?.[0]?.url || null;
 
   return (
     <li>
@@ -139,24 +137,26 @@ export const SearchResultItem = ({
             imagePosition === 'top' ? 'sm:flex-col' : 'sm:flex-row'
           } h-full`}
         >
-          <div
-            className={`image-container image-container--${imagePosition} ${
-              imagePosition === 'left' ? 'sm:w-1/3' : 'w-full'
-            } ${imagePosition === 'right' ? 'sm:w-1/4' : ''} ${
-              imagePosition === 'top' ? 'h-24 sm:h-48' : 'h-24 sm:h-auto'
-            }`}
-          >
-            <div className="relative h-full">
-              <img
-                src={imageUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+          {imageUrl ? (
+            <div
+              className={`image-container image-container--${imagePosition} ${
+                imagePosition === 'left' ? 'sm:w-1/3' : 'w-full'
+              } ${imagePosition === 'right' ? 'sm:w-1/4' : ''} ${
+                imagePosition === 'top' ? 'h-24 sm:h-48' : 'h-24 sm:h-auto'
+              }`}
+            >
+              <div className="relative h-full">
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
           <div
             className={`flex flex-col ${
-              imagePosition === 'right' ? 'sm:w-3/4' : 'w-full'
+              imageUrl && imagePosition === 'right' ? 'sm:w-3/4' : 'w-full'
             }`}
           >
             <CardHeader className="pb-2">
