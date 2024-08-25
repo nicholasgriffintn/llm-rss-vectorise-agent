@@ -54,6 +54,8 @@ export default function Index() {
       } else {
         setHasSearched(false);
         setIsIntroVisible(true);
+        setQuery('');
+        submit({ query: '' }); 
       }
     },
     [submit]
