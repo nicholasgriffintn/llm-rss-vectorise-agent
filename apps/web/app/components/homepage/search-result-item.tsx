@@ -1,10 +1,17 @@
 import { Fragment } from 'react';
+import { UserRoundPen, Calendar } from 'lucide-react';
 
 import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import { Badge } from '../ui/badge';
 import { RenderDate } from '../text/date';
-
-import { Fragment } from 'react';
 
 function stripHtmlTagsAndDecode(html: string): string {
   // Replace paragraph tags with new lines
@@ -74,6 +81,21 @@ function renderTextWithNewLines(text: string, url: string): JSX.Element {
   );
 }
 
+function getBadgeColor(score: number): string {
+  if (score < 40) {
+    return 'bg-red-500'; // Bad match
+  } else if (score < 70) {
+    return 'bg-yellow-500'; // Okay match
+  } else {
+    return 'bg-green-500'; // Great match
+  }
+}
+
+function getRandomImagePosition(): string {
+  const positions = ['left', 'top', 'right'];
+  return positions[Math.floor(Math.random() * positions.length)];
+}
+
 export const SearchResultItem = ({
   result,
 }: {
@@ -88,79 +110,152 @@ export const SearchResultItem = ({
     };
     score: number;
   };
-}) => (
-  <li className="bg-card text-card-foreground rounded-lg shadow relative">
-    {result.score && (
-      <span className="absolute top-2 right-2 bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
-        {Math.round(result.score * 100)}% match
-      </span>
-    )}
-    <img
-      src="/assets/placeholders/150x150.png"
-      alt=""
-      className="w-full h-16 object-cover rounded-t-lg"
-    />
-    <div className="p-4">
-      <a
-        href={result.metadata.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-lg font-bold title"
-      >
-        {result.metadata.title}
-      </a>
-      <div className="flex flex-wrap justify-center gap-2 mb-2">
-        {result.metadata.author && (
-          <span className="text-xs text-muted-foreground">
-            Author: {result.metadata.author}
-          </span>
-        )}
-        {document.fhfhs}
-        {result.metadata.published && (
-          <span className="text-xs text-muted-foreground">
-            Published:{' '}
-            <RenderDate date={result.metadata.published} timeZone="UTC" />
-          </span>
-        )}
-        {result.metadata.updated && (
-          <span className="text-xs text-muted-foreground">
-            Updated:{' '}
-            <RenderDate date={result.metadata.updated} timeZone="UTC" />
-          </span>
-        )}
-      </div>
-      {result.metadata.description && (
-        <p className="text-sm text-muted-foreground">
-          {renderTextWithNewLines(
-            stripHtmlTagsAndDecode(result.metadata.description),
-            result.metadata.url
+}) => {
+  const matchPercentage = Math.round(result.score * 100);
+  const badgeColor = getBadgeColor(matchPercentage);
+  const imagePosition = getRandomImagePosition();
+
+  return (
+    <li>
+      <Card className="overflow-hidden">
+        <div
+          className={`flex ${
+            imagePosition === 'top' ? 'flex-col' : 'flex-row'
+          } h-full`}
+        >
+          {imagePosition === 'left' && (
+            <div className="sm:w-1/3 h-48 sm:h-auto">
+              <div className="relative h-full">
+                <img
+                  src="/assets/placeholder.svg"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           )}
-        </p>
-      )}
-      <div className="flex flex-wrap justify-center gap-2 mt-4">
-        <Modal
-          trigger={
-            <Button variant="outline" size="sm" className="text-xs">
-              Summarise
-            </Button>
-          }
-          title="Summarise article"
-          description="Use AI to generate a summary of the article."
-        >
-          <div className="flex items-center space-x-2">Coming soon...</div>
-        </Modal>
-        <Modal
-          trigger={
-            <Button variant="outline" size="sm" className="text-xs">
-              Analyse
-            </Button>
-          }
-          title="Analyse article"
-          description="Use AI to analyse the article."
-        >
-          <div className="flex items-center space-x-2">Coming soon...</div>
-        </Modal>
-      </div>
-    </div>
-  </li>
-);
+          {imagePosition === 'top' && (
+            <div className="w-full h-24">
+              <div className="relative h-full">
+                <img
+                  src="/assets/placeholder.svg"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          )}
+          <div
+            className={`flex flex-col ${
+              imagePosition === 'right' ? 'sm:w-2/3' : 'w-full'
+            }`}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex flex-col space-y-2">
+                <CardTitle className="text-lg sm:text-xl font-semibold text-left">
+                  <a
+                    href={result.metadata.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="title"
+                  >
+                    {result.metadata.title}
+                  </a>
+                </CardTitle>
+              </div>
+              <div className="flex flex-wrap justify-left gap-2 mb-2">
+                {result.score && (
+                  <Badge variant="secondary" className={`w-fit ${badgeColor}`}>
+                    {matchPercentage}% match
+                  </Badge>
+                )}
+                {result.metadata.author && (
+                  <span className="text-xs text-muted-foreground flex items-center">
+                    <UserRoundPen className="mr-2 h-4 w-4" />
+                    {result.metadata.author}
+                  </span>
+                )}
+                {result.metadata.published && (
+                  <span className="text-xs text-muted-foreground flex items-center">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <RenderDate
+                      date={result.metadata.published}
+                      timeZone="UTC"
+                    />
+                    {result.metadata.updated && (
+                      <span>
+                        (Updated:{' '}
+                        <RenderDate
+                          date={result.metadata.updated}
+                          timeZone="UTC"
+                        />
+                        )
+                      </span>
+                    )}
+                  </span>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              {result.metadata.description && (
+                <p className="text-sm sm:text-base text-left">
+                  {renderTextWithNewLines(
+                    stripHtmlTagsAndDecode(result.metadata.description),
+                    result.metadata.url
+                  )}
+                </p>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-wrap justify-end space-x-2 space-y-2 sm:space-y-0 bg-muted/50 py-2">
+              <Modal
+                trigger={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                  >
+                    Summarise
+                  </Button>
+                }
+                title="Summarise article"
+                description="Use AI to generate a summary of the article."
+              >
+                <div className="flex items-center space-x-2">
+                  Coming soon...
+                </div>
+              </Modal>
+              <Modal
+                trigger={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                  >
+                    Analyse
+                  </Button>
+                }
+                title="Analyse article"
+                description="Use AI to analyse the article."
+              >
+                <div className="flex items-center space-x-2">
+                  Coming soon...
+                </div>
+              </Modal>
+            </CardFooter>
+          </div>
+          {imagePosition === 'right' && (
+            <div className="sm:w-1/3 h-48 sm:h-auto">
+              <div className="relative h-full">
+                <img
+                  src="/assets/placeholder.svg"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+    </li>
+  );
+};
