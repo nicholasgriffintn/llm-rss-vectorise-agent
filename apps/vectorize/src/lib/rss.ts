@@ -1,5 +1,4 @@
 import { XMLParser } from 'fast-xml-parser';
-import { rssFeeds } from '../constants';
 
 const options = {
   ignoreAttributes: false,
@@ -59,7 +58,12 @@ function parseFeed(data: any): Record<string, any> {
  * @returns A unique ID string.
  */
 export function generateId(entry: any): string {
-  let id = entry.guid?.['#text'] || entry.guid || entry.id || entry.link;
+  let id =
+    entry.id ||
+    entry['post-id']?.['#text'] ||
+    entry.guid?.['#text'] ||
+    entry.guid ||
+    entry.link;
   if (typeof id !== 'string') {
     id = JSON.stringify(id);
   }
@@ -108,12 +112,15 @@ export function extractMetadata(entry: any): Record<string, any> {
       }, {})
     : null;
 
-  const categoriesContent = entry.content?.length
-    ? entry.content.reduce((acc, c, index) => {
-        acc[`category_${index}`] = {
-          url: c?.['@_domain'],
-          label: c?.['#text'],
-        };
+  const categoriesContent = entry.category?.length
+    ? entry.category.reduce((acc, c, index) => {
+        acc[`category_${index}`] =
+          typeof c === 'string'
+            ? { label: c }
+            : {
+                url: c?.['@_domain'],
+                label: c?.['#text'],
+              };
         return acc;
       }, {})
     : {};
@@ -136,5 +143,8 @@ export function extractMetadata(entry: any): Record<string, any> {
     media: mediaContent,
     categories: categoriesContent,
     copyright: entry.copyright,
+    keywords: entry['media:keywords'] || entry.keywords,
+    publisher: entry['dc:publisher'],
+    subject: entry['dc:subject'],
   };
 }
