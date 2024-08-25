@@ -23,7 +23,10 @@ export async function handleQuery(userQuery: string, env: Env) {
     return { count: 0, matches: [] };
   }
 
-  if (process?.env.ENVIRONMENT === 'development') {
+  if (
+    typeof process !== 'undefined' &&
+    process?.env?.ENVIRONMENT === 'development'
+  ) {
     return matchesFixture;
   }
 
