@@ -74,16 +74,18 @@ export function generateId(entry: any): string {
  * @returns The parsed content string.
  */
 export function parseContent(entry: any): string {
-  if (entry.content) {
-    return typeof entry.content === 'string'
-      ? entry.content
-      : entry.content?.['#text']
-          ?.replace(/\\u003C/g, '<')
-          .replace(/\\u003E/g, '>')
-          .replace(/\\u0022/g, '"')
-          .replace(/\\n/g, '');
+  const content =
+    entry.content?.['#text'] || entry.content || entry.description || '';
+
+  if (typeof content !== 'string') {
+    return JSON.stringify(content);
   }
-  return entry.description || '';
+
+  return content
+    .replace(/\\u003C/g, '<')
+    .replace(/\\u003E/g, '>')
+    .replace(/\\u0022/g, '"')
+    .replace(/\\n/g, '');
 }
 
 /**
