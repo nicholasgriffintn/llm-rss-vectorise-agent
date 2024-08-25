@@ -84,7 +84,7 @@ export default function Index() {
             <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
             <ul className="list-disc ml-4">
               <li className="text-sm text-left">
-                Extend inserting to use Playwright to get more content
+                Extend Playwright beyond BBC News
                 <ul className="list-disc ml-4">
                   <li className="text-sm text-left">
                     This will need to act differently between the sites and

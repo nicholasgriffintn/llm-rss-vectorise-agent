@@ -1,8 +1,8 @@
 export const rssFeeds = [
-  'https://www.wired.com/feed/rss',
   'https://www.theverge.com/rss/index.xml',
-  'http://feeds.bbci.co.uk/news/rss.xml',
-  'http://feeds.bbci.co.uk/news/world/rss.xml',
+  'https://feeds.bbci.co.uk/sport/rss.xml',
+  'https://feeds.bbci.co.uk/news/england/rss.xml',
+  'https://feeds.bbci.co.uk/news/england/london/rss.xml',
   'http://feeds.bbci.co.uk/news/business/rss.xml',
   'http://feeds.bbci.co.uk/news/politics/rss.xml',
   'http://feeds.bbci.co.uk/news/health/rss.xml',
@@ -12,7 +12,6 @@ export const rssFeeds = [
   'http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml',
   'https://www.theguardian.com/uk/rss',
   'https://hnrss.org/frontpage',
-  'https://css-tricks.com/feed/',
 ];
 
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';

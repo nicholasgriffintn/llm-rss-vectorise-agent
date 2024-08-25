@@ -5,8 +5,13 @@ import type { Env, Message } from '../types';
 import { logger } from '../lib/logger';
 import { fetchRSSFeed } from '../lib/rss';
 import { generateId, parseContent, extractMetadata } from '../lib/rss';
-import { initializePrisma, updateItemStatus } from '../lib/db';
+import {
+  initializePrisma,
+  updateItemStatus,
+  createQueuedItem,
+} from '../lib/db';
 import { generateVectors } from '../lib/ai';
+import { getRandomSession } from '../lib/browser';
 
 /**
  * Handles the processing of a batch of messages from the queue.
@@ -126,20 +131,6 @@ async function processRSSMessage(
       id: entryId,
       data: { text: parsedString, metadata },
     });
-    await prisma.item.upsert({
-      where: { id },
-      update: {
-        status: 'queued',
-        text: parsedString,
-        metadata: JSON.stringify(metadata),
-      },
-      create: {
-        id,
-        status: 'queued',
-        text: parsedString,
-        metadata: JSON.stringify(metadata),
-      },
-    });
 
     inserted.push({ id: entryId, status: 'queued' });
   }
@@ -169,31 +160,73 @@ async function processEntryMessage(
     logger.log('No text for', id);
     return null;
   }
-
-  await prisma.item.upsert({
-    where: { id },
-    update: { status: 'queued' },
-    create: { id, status: 'queued' },
-  });
+  await createQueuedItem(prisma, id, parsedString, metadata);
 
   let queryText = parsedString;
-  // TODO: Make this work, getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"
-  /* if (metadata.url && env.BROWSER) {
-    const url = new URL(metadata.url).toString();
-    logger.log('Fetching', url);
-    // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
-    const browser = await puppeteer.launch(env.BROWSER);
-    const page = await browser.newPage();
-    await page.goto(url);
+  try {
+    if (metadata.url && env.BROWSER) {
+      const url = new URL(metadata.url).toString();
+      const isBBCNews =
+        url.startsWith('https://www.bbc.co.uk/news/') ||
+        url.startsWith('https://www.bbc.com/news/');
+      const isBBCSport =
+        url.startsWith('https://www.bbc.co.uk/sport/') ||
+        url.startsWith('https://www.bbc.com/sport/');
 
-    const pTags = await page.$$('p');
-    const text = await Promise.all(
-      pTags.map((p) => page.evaluate((el) => el.textContent, p))
-    );
-    queryText = text.join(' ');
+      if (isBBCNews || isBBCSport) {
+        logger.log('Fetching', url);
+        let sessionId = await getRandomSession(env.BROWSER);
+        let browser, launched;
+        if (sessionId) {
+          try {
+            // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
+            browser = await puppeteer.connect(env.BROWSER, sessionId);
+          } catch (e) {
+            // another worker may have connected first
+            logger.error(`Failed to connect to ${sessionId}. Error ${e}`);
+          }
+        }
+        if (!browser) {
+          // No open sessions, launch new session
+          // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
+          browser = await puppeteer.launch(env.BROWSER);
+          launched = true;
+        }
 
-    await browser.close();
-  } */
+        sessionId = browser.sessionId();
+
+        const page = await browser.newPage();
+        await page.goto(url);
+
+        let headline = null;
+        try {
+          headline = await page.$eval(
+            '[headline-block]',
+            (el) => el.textContent || ''
+          );
+        } catch (e) {
+          logger.error('Headline element not found');
+        }
+
+        let textBlocks: unknown[] = [];
+        try {
+          textBlocks = await page.$$eval('[text-block]', (els) =>
+            els.map((el) => el.textContent || '')
+          );
+        } catch (e) {
+          logger.error('Text elements not found');
+        }
+
+        queryText = [headline, ...textBlocks].join('\n');
+
+        console.log('Query text:', queryText);
+
+        await browser.disconnect();
+      }
+    }
+  } catch (e) {
+    logger.error('Error rendering in browser:', e);
+  }
 
   await updateItemStatus(prisma, id, 'processing');
 
