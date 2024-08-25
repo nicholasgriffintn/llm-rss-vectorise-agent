@@ -111,14 +111,12 @@ export const SearchResultItem = ({
         width?: number;
         height?: number;
       };
-      media?: {
-        media_0?: {
-          url: string;
-          type?: string;
-          width?: number;
-          height?: number;
-          credit?: string;
-        };
+      media_0?: {
+        url: string;
+        type?: string;
+        width?: number;
+        height?: number;
+        credit?: string;
       };
     };
     score: number;
@@ -130,7 +128,7 @@ export const SearchResultItem = ({
 
   const imageUrl =
     result.metadata?.thumbnail?.url ||
-    result.metadata?.media?.['media_0']?.url ||
+    result.metadata?.['media_0']?.url ||
     null;
 
   const imageWidth = result.metadata?.thumbnail?.width || null;

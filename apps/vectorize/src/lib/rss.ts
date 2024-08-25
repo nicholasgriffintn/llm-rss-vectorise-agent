@@ -140,8 +140,8 @@ export function extractMetadata(entry: any): Record<string, any> {
           height: entry['media:thumbnail']?.['@_height'],
         }
       : null,
-    media: mediaContent,
-    categories: categoriesContent,
+    ...mediaContent,
+    ...categoriesContent,
     copyright: entry.copyright,
     keywords: entry['media:keywords'] || entry.keywords,
     publisher: entry['dc:publisher'],
