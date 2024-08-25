@@ -12,6 +12,7 @@ export const rssFeeds = [
   'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml',
   'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',
   'https://www.theguardian.com/uk/rss',
+  'https://www.theguardian.com/uk/sport/rss',
   'https://hnrss.org/frontpage',
 ];
 

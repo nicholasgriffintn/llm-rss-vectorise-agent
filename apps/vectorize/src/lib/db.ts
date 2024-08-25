@@ -24,12 +24,21 @@ export function initializePrisma(env: Env): PrismaClient {
 export async function updateItemStatus(
   prisma: PrismaClient,
   id: string,
-  status: string
+  status: string,
+  queryText?: string
 ) {
+  const updateData: any = { status };
+  const createData: any = { id, status };
+
+  if (queryText) {
+    updateData.queryText = queryText;
+    createData.queryText = queryText;
+  }
+
   await prisma.item.upsert({
     where: { id },
-    update: { status },
-    create: { id, status },
+    update: updateData,
+    create: createData,
   });
 }
 

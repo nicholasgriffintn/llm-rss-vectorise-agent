@@ -84,16 +84,6 @@ export default function Index() {
             <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
             <ul className="list-disc ml-4">
               <li className="text-sm text-left">
-                Extend Playwright beyond BBC News
-                <ul className="list-disc ml-4">
-                  <li className="text-sm text-left">
-                    This will need to act differently between the sites and
-                    correctly identify article text. BBC Sounds will need to be
-                    handled differently as well.
-                  </li>
-                </ul>
-              </li>
-              <li className="text-sm text-left">
                 Add a summarise modal and method that uses AI to summarise the
                 article.
                 <ul className="list-disc ml-4">

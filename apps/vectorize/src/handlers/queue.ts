@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import puppeteer from '@cloudflare/puppeteer';
+import * as cheerio from 'cheerio';
 
 import type { Env, Message } from '../types';
 import { logger } from '../lib/logger';
@@ -11,7 +11,10 @@ import {
   createQueuedItem,
 } from '../lib/db';
 import { generateVectors } from '../lib/ai';
-import { getRandomSession } from '../lib/browser';
+
+const BBC_NEWS_PREFIX = 'https://www.bbc.co.uk/news/articles/';
+const BBC_SPORT_PREFIX = 'https://www.bbc.co.uk/sport/articles/';
+const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
 
 /**
  * Handles the processing of a batch of messages from the queue.
@@ -19,12 +22,10 @@ import { getRandomSession } from '../lib/browser';
  * @param batch - The batch of messages to process.
  * @param env - The environment object containing various services.
  */
-export async function handleQueue(batch, env: Env) {
+export async function handleQueue(batch: any, env: Env) {
   const messages = parseMessages(batch);
-
   const prisma = initializePrisma(env);
   const inserted = await processMessages(messages, env, prisma);
-
   logger.log(JSON.stringify(inserted));
 }
 
@@ -34,7 +35,7 @@ export async function handleQueue(batch, env: Env) {
  * @param batch - The batch of messages.
  * @returns An array of parsed messages.
  */
-function parseMessages(batch): Array<Message> {
+function parseMessages(batch: any): Array<Message> {
   return batch.messages as unknown as Array<Message>;
 }
 
@@ -60,9 +61,7 @@ async function processMessages(
     if (type === 'rss') {
       const rssInserted = await processRSSMessage(id, prisma, env);
       inserted.push(...rssInserted);
-    }
-
-    if (type === 'entry') {
+    } else if (type === 'entry') {
       const entryInserted = await processEntryMessage(id, data, prisma, env);
       if (entryInserted) {
         inserted.push(entryInserted);
@@ -90,21 +89,8 @@ async function processRSSMessage(
   const stories = await fetchRSSFeed(id);
   const allEntries = stories.entries || [];
 
-  // Generate IDs for all entries
   const entryIds = allEntries.map((entry) => generateId(entry));
-
-  // Fetch all existing entries from the database in one query
-  const existingEntries = await prisma.item.findMany({
-    where: {
-      id: { in: entryIds },
-    },
-    select: {
-      id: true,
-      status: true,
-    },
-  });
-
-  // Create a map of existing entries for quick lookup
+  const existingEntries = await fetchExistingEntries(prisma, entryIds);
   const existingEntriesMap = new Map(
     existingEntries.map((entry) => [entry.id, entry.status])
   );
@@ -139,6 +125,25 @@ async function processRSSMessage(
 }
 
 /**
+ * Fetches existing entries from the database.
+ *
+ * @param prisma - The Prisma client for database operations.
+ * @param entryIds - The IDs of the entries to fetch.
+ * @returns A promise that resolves to an array of existing entries.
+ */
+async function fetchExistingEntries(prisma: PrismaClient, entryIds: string[]) {
+  return prisma.item.findMany({
+    where: {
+      id: { in: entryIds },
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+}
+
+/**
  * Processes an entry message, generating vectors and updating the item status.
  *
  * @param id - The ID of the entry.
@@ -164,84 +169,127 @@ async function processEntryMessage(
 
   let queryText = parsedString;
   try {
-    if (metadata.url && env.BROWSER) {
-      const url = new URL(metadata.url).toString();
-      // TODO: Expand to other sites and sections
-      const isBBCNews =
-        url.startsWith('https://www.bbc.co.uk/news/articles/') ||
-        url.startsWith('https://www.bbc.com/news/articles/');
-      const isBBCSport =
-        url.startsWith('https://www.bbc.co.uk/sport/articles/') ||
-        url.startsWith('https://www.bbc.com/sport/articles/');
-
-      if (isBBCNews || isBBCSport) {
-        logger.log('Fetching', url);
-        let sessionId = await getRandomSession(env.BROWSER);
-        let browser, launched;
-        if (sessionId) {
-          try {
-            // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
-            browser = await puppeteer.connect(env.BROWSER, sessionId);
-          } catch (e) {
-            // another worker may have connected first
-            logger.error(`Failed to connect to ${sessionId}. Error ${e}`);
-          }
-        }
-        if (!browser) {
-          // No open sessions, launch new session
-          // @ts-expect-error - Cloudflare's Puppeteer types are incomplete
-          browser = await puppeteer.launch(env.BROWSER);
-          launched = true;
-        }
-
-        sessionId = browser.sessionId();
-
-        const page = await browser.newPage();
-        const bbcAmpUrl = `${url}.amp`;
-        await page.goto(bbcAmpUrl);
-
-        await page.waitForSelector('main p', {
-          timeout: 10000,
-        });
-
-        // TODO: This isn't working, I don't know why, I think it's because Browser Worker sits outside the Worker?
-        // TODO: Getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"
-        let headline = null;
-        try {
-          headline = await page.$eval('h1', (el) => el.textContent || '');
-        } catch (e) {
-          logger.error('Headline element not found');
-        }
-
-        let textBlocks: unknown[] = [];
-        try {
-          textBlocks = await page.$$eval('main p', (els) =>
-            els.map((el) => el.textContent || '')
-          );
-        } catch (e) {
-          logger.error('Text elements not found');
-        }
-
-        const newQueryText = [headline, ...textBlocks].join('\n');
-
-        if (newQueryText?.length > 1) {
-          queryText = newQueryText;
-        }
-
-        console.log('Query text:', queryText);
-
-        await browser.disconnect();
-      }
+    if (metadata.url) {
+      queryText = await fetchAndParseContent(metadata.url, queryText);
     }
   } catch (e) {
-    logger.error('Error rendering in browser:', e);
+    logger.error('Error fetching content:', e);
   }
 
-  await updateItemStatus(prisma, id, 'processing');
+  await updateItemStatus(prisma, id, 'processing', queryText);
 
   const vectors = await generateVectors(env, id, queryText, metadata);
   const insertedItem = await env.VECTORIZE.upsert(vectors);
 
   await updateItemStatus(prisma, id, 'processed');
   return insertedItem;
+}
+
+/**
+ * Fetches and parses content from a URL.
+ *
+ * @param url - The URL to fetch content from.
+ * @param defaultText - The default text to use if fetching fails.
+ * @returns A promise that resolves to the fetched and parsed content.
+ */
+async function fetchAndParseContent(
+  url: string,
+  defaultText: string
+): Promise<string> {
+  let queryText = defaultText;
+  const urlToUse = getUrlToUse(url);
+
+  if (urlToUse) {
+    logger.log('Fetching', urlToUse);
+
+    try {
+      const response = await fetch(urlToUse);
+      const content = urlToUse.endsWith('.json')
+        ? await response.json()
+        : await response.text();
+      queryText = parseFetchedContent(content, urlToUse);
+    } catch (error) {
+      logger.error(`Failed to fetch the page. Error: ${error}`);
+    }
+  }
+
+  return queryText;
+}
+
+/**
+ * Determines the URL to use for fetching content.
+ *
+ * @param url - The original URL.
+ * @returns The URL to use for fetching content.
+ */
+function getUrlToUse(url: string): string | null {
+  if (url.startsWith(GUARDIAN_PREFIX)) {
+    return `${url}.json`;
+  } else if (
+    url.startsWith(BBC_NEWS_PREFIX) ||
+    url.startsWith(BBC_SPORT_PREFIX)
+  ) {
+    return `${url}.amp`;
+  }
+  return null;
+}
+
+/**
+ * Parses the fetched content.
+ *
+ * @param content - The fetched content.
+ * @param url - The URL from which the content was fetched.
+ * @returns The parsed content.
+ */
+function parseFetchedContent(content: any, url: string): string {
+  if (url.endsWith('.json')) {
+    return parseGuardianContent(content);
+  } else {
+    return parseBBCContent(content);
+  }
+}
+
+/**
+ * Parses content from The Guardian.
+ *
+ * @param json - The JSON content.
+ * @returns The parsed content.
+ */
+function parseGuardianContent(json: any): string {
+  let headline = json.webTitle || '';
+  let textBlocks: string[] = [];
+
+  try {
+    const htmlContent = json.html;
+    const $ = cheerio.load(htmlContent);
+    textBlocks = $('p')
+      .map((i, el) => $(el).text() || '')
+      .get();
+  } catch (e) {
+    logger.error('Text elements not found');
+  }
+
+  return [headline, ...textBlocks].join('\n');
+}
+
+/**
+ * Parses content from BBC.
+ *
+ * @param html - The HTML content.
+ * @returns The parsed content.
+ */
+function parseBBCContent(html: string): string {
+  const $ = cheerio.load(html);
+  let headline = $('h1').text() || '';
+  let textBlocks: string[] = [];
+
+  try {
+    textBlocks = $('main[role="main"] p')
+      .map((i, el) => $(el).text() || '')
+      .get();
+  } catch (e) {
+    logger.error('Text elements not found');
+  }
+
+  return [headline, ...textBlocks].join('\n');
 }
