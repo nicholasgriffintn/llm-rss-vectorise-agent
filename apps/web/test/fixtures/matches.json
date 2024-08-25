@@ -24,7 +24,12 @@
         "description": "This week Tech Life has a special programme about the technology of artificial limbs.",
         "published": "Tue, 18 Jun 2024 19:30:00 GMT",
         "image": null,
-        "author": "Test"
+        "author": "Test",
+        "thumbnail": {
+          "url": "https://ichef.bbci.co.uk/images/ic/320x320/p0j4zq1c.jpg",
+          "width": 1024,
+          "height": 576
+        }
       },
       "score": 0.613470031
     },
@@ -35,7 +40,12 @@
         "title": "What are BTecs and how are they graded?",
         "description": "Hundreds of thousands of students do vocational qualifications known as BTecs every year.",
         "published": "Thu, 22 Aug 2024 10:09:34 GMT",
-        "image": null
+        "image": null,
+        "thumbnail": {
+          "url": "https://ichef.bbci.co.uk/news/976/cpsprodpb/17890/production/_108300469_gettyimages-827810800.jpg",
+          "width": 1024,
+          "height": 576
+        }
       },
       "score": 0.605686226
     },
@@ -57,7 +67,11 @@
         "title": "Tech Life: Helping our animal friends",
         "description": "This edition of Tech Life is all about animals and tech.",
         "published": "Tue, 11 Jun 2024 19:30:00 GMT",
-        "image": null
+        "thumbnail": {
+          "url": "https://ichef.bbci.co.uk/images/ic/320x320/p0j3lyv8.jpg",
+          "width": 1024,
+          "height": 576
+        }
       },
       "score": 0.597843151
     },
@@ -68,14 +82,14 @@
         "title": "Like ‘using Lego blocks’: record-breaking tunnel connecting Denmark and Germany takes shape",
         "description": "<p>Tunnel being built with innovative engineering is final step of project to connect Denmark – and the Nordics as a whole – to the rest of Europe</p><p>From the quayside of the Danish town of Rødbyhavn, the Baltic sea sparkling in the sunshine, Germany is so close you can see it – a cluster of wind turbines on the horizon.</p><p>The German town of Puttgarden is just 11 miles away, but getting there involves either a 45-minute ferry journey – plus time for embarking and disembarking – or a six-hour drive taking in much of Denmark.</p> <a href=\"https://www.theguardian.com/world/article/2024/aug/23/record-breaking-tunnel-denmark-germany-fehmarnbelt\">Continue reading...</a>",
         "published": "Fri, 23 Aug 2024 09:55:45 GMT",
-        "media": [
-          {
+        "media": {
+          "media_0": {
             "url": "https://i.guim.co.uk/img/media/416ce860b73ef1714b53930e172105aae0a52a29/0_6_7848_4709/master/7848.jpg?width=1900&dpr=2&s=none",
             "type": "image",
             "width": 1900,
             "height": 1140
           }
-        ]
+        }
       },
       "score": 0.591936666
     },

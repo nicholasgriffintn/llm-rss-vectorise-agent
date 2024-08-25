@@ -112,12 +112,14 @@ export const SearchResultItem = ({
         height?: number;
       };
       media?: {
-        url: string;
-        type?: string;
-        width?: number;
-        height?: number;
-        credit?: string;
-      }[];
+        media_0?: {
+          url: string;
+          type?: string;
+          width?: number;
+          height?: number;
+          credit?: string;
+        };
+      };
     };
     score: number;
   };
@@ -127,7 +129,14 @@ export const SearchResultItem = ({
   const badgeColor = getBadgeColor(matchPercentage);
 
   const imageUrl =
-    result.metadata?.thumbnail?.url || result.metadata?.media?.[0]?.url || null;
+    result.metadata?.thumbnail?.url ||
+    result.metadata?.media?.['media_0']?.url ||
+    null;
+
+  const imageWidth = result.metadata?.thumbnail?.width || null;
+  const imageHeight = result.metadata?.thumbnail?.height || null;
+
+  const shouldCover = imageWidth && imageHeight && imageWidth > imageHeight;
 
   return (
     <li>
@@ -145,11 +154,13 @@ export const SearchResultItem = ({
                 imagePosition === 'top' ? 'h-24 sm:h-48' : 'h-24 sm:h-auto'
               }`}
             >
-              <div className="relative h-full">
+              <div className="relative h-full bg-gray-600">
                 <img
                   src={imageUrl}
                   alt=""
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full ${
+                    shouldCover ? 'object-cover' : 'object-contain'
+                  }`}
                 />
               </div>
             </div>
