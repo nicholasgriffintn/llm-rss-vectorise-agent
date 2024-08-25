@@ -200,6 +200,10 @@ async function processEntryMessage(
         const bbcAmpUrl = `${url}.amp`;
         await page.goto(bbcAmpUrl);
 
+        await page.waitForSelector('main p', {
+          timeout: 10000,
+        });
+
         // TODO: This isn't working, I don't know why, I think it's because Browser Worker sits outside the Worker?
         // TODO: Getting error: "Protocol error (Runtime.callFunctionOn): Argument should belong to the same JavaScript world as target object"
         let headline = null;
