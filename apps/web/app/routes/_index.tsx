@@ -85,40 +85,40 @@ export default function Index() {
             <ul className="list-disc ml-4">
               <li className="text-sm text-left">
                 Extend inserting to use Playwright to get more content
+                <ul className="list-disc ml-4">
+                  <li className="text-sm text-left">
+                    This will need to act differently between the sites and
+                    correctly identify article text. BBC Sounds will need to be
+                    handled differently as well.
+                  </li>
+                </ul>
               </li>
-              <ul className="list-disc ml-4">
-                <li className="text-sm text-left">
-                  This will need to act differently between the sites and
-                  correctly identify article text. BBC Sounds will need to be
-                  handled differently as well.
-                </li>
-              </ul>
               <li className="text-sm text-left">
                 Display images on the results.
               </li>
               <li className="text-sm text-left">
                 Add a summarise modal and method that uses AI to summarise the
                 article.
+                <ul className="list-disc ml-4">
+                  <li className="text-sm text-left">
+                    If Hacker News, this will need to act differently, as it
+                    will need to summarise the comments.
+                  </li>
+                  <li className="text-sm text-left">
+                    For BBC Sounds, it also audio content.
+                  </li>
+                </ul>
               </li>
-              <ul className="list-disc ml-4">
-                <li className="text-sm text-left">
-                  If Hacker News, this will need to act differently, as it will
-                  need to summarise the comments.
-                </li>
-                <li className="text-sm text-left">
-                  For BBC Sounds, it also audio content.
-                </li>
-              </ul>
               <li className="text-sm text-left">
                 Add a analyse modal and method that uses AI to analyse the
                 article.
+                <ul className="list-disc ml-4">
+                  <li className="text-sm text-left">
+                    Like summarise, this will need to act differently between
+                    the sites.
+                  </li>
+                </ul>
               </li>
-              <ul className="list-disc ml-4">
-                <li className="text-sm text-left">
-                  Like summarise, this will need to act differently between the
-                  sites.
-                </li>
-              </ul>
               <li className="text-sm text-left">
                 Add the ability for users to submit sites to be indexed.
               </li>
