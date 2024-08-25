@@ -79,6 +79,58 @@ export default function Index() {
           </div>
           {isIntroVisible && <ExampleSearches handleSearch={handleSearch} />}
         </div>
+        {isIntroVisible && (
+          <div>
+            <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
+            <ul className="list-disc ml-4">
+              <li className="text-sm text-left">
+                Extend inserting to use Playwright to get more content
+              </li>
+              <ul className="list-disc ml-4">
+                <li className="text-sm text-left">
+                  This will need to act differently between the sites and
+                  correctly identify article text. BBC Sounds will need to be
+                  handled differently as well.
+                </li>
+              </ul>
+              <li className="text-sm text-left">
+                Display images on the results.
+              </li>
+              <li className="text-sm text-left">
+                Add a summarise modal and method that uses AI to summarise the
+                article.
+              </li>
+              <ul className="list-disc ml-4">
+                <li className="text-sm text-left">
+                  If Hacker News, this will need to act differently, as it will
+                  need to summarise the comments.
+                </li>
+                <li className="text-sm text-left">
+                  For BBC Sounds, it also audio content.
+                </li>
+              </ul>
+              <li className="text-sm text-left">
+                Add a analyse modal and method that uses AI to analyse the
+                article.
+              </li>
+              <ul className="list-disc ml-4">
+                <li className="text-sm text-left">
+                  Like summarise, this will need to act differently between the
+                  sites.
+                </li>
+              </ul>
+              <li className="text-sm text-left">
+                Add the ability for users to submit sites to be indexed.
+              </li>
+              <li className="text-sm text-left">
+                Add the ability for users to add notes about the articles.
+              </li>
+              <li className="text-sm text-left">
+                Add a chatbot interface to discuss articles.
+              </li>
+            </ul>
+          </div>
+        )}
         {state !== 'idle' ? (
           <LoadingSpinner className="mt-8">
             <span className="ml-2">Loading results...</span>
