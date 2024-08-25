@@ -1,6 +1,12 @@
 import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
 
+function stripHtmlTags(html: string): string {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+}
+
 export const SearchResultItem = ({
   result,
 }: {
@@ -23,7 +29,7 @@ export const SearchResultItem = ({
     </a>
     {result.metadata.description && (
       <p className="text-sm text-muted-foreground">
-        {result.metadata.description}
+        {stripHtmlTags(result.metadata.description)}
       </p>
     )}
     <div className="flex flex-wrap justify-center gap-2 mt-4">
