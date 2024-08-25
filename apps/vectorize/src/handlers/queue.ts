@@ -166,6 +166,7 @@ async function processEntryMessage(
   try {
     if (metadata.url && env.BROWSER) {
       const url = new URL(metadata.url).toString();
+      // TODO: Expand to other sites and sections
       const isBBCNews =
         url.startsWith('https://www.bbc.co.uk/news/') ||
         url.startsWith('https://www.bbc.com/news/');
@@ -198,6 +199,7 @@ async function processEntryMessage(
         const page = await browser.newPage();
         await page.goto(url);
 
+        // TODO: This isn't working, I don't know why.
         let headline = null;
         try {
           headline = await page.$eval(
