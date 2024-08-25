@@ -2,9 +2,7 @@ import { Button } from '../ui/button';
 import { Modal } from '../modal/base';
 
 function stripHtmlTags(html: string): string {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || div.innerText || '';
+  return html.replace(/<\/?[^>]+(>|$)/g, '');
 }
 
 export const SearchResultItem = ({
