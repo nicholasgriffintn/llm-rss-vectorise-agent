@@ -3,6 +3,7 @@ import { isbot } from 'isbot';
 import { json } from '@remix-run/cloudflare';
 
 import { loraModel, loraAdapter, gatewayId } from '../lib/ai';
+import summariseArticlePrompt from '../prompts/summarise-article.json';
 
 export async function action({ request, context }: LoaderFunctionArgs) {
   try {
@@ -34,9 +35,10 @@ export async function action({ request, context }: LoaderFunctionArgs) {
         stream: true,
         raw: true,
         messages: [
+          ...summariseArticlePrompt,
           {
             role: 'user',
-            content: `Summarize the following: ${article}`,
+            content: `Summarize the following news: ${article}`,
           },
         ],
         lora: loraAdapter,
@@ -54,8 +56,6 @@ export async function action({ request, context }: LoaderFunctionArgs) {
     return new Response(answer, {
       headers: {
         'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
       },
     });
   } catch (error) {
