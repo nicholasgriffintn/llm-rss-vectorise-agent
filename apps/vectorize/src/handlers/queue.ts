@@ -1,16 +1,14 @@
-import { PrismaClient } from '@prisma/client';
 import * as cheerio from 'cheerio';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
+import { inArray } from 'drizzle-orm';
 
 import type { Env, Message } from '../types';
 import { logger } from '../lib/logger';
 import { fetchRSSFeed } from '../lib/rss';
 import { generateId, parseContent, extractMetadata } from '../lib/rss';
-import {
-  initializePrisma,
-  updateItemStatus,
-  createQueuedItem,
-} from '../lib/db';
+import { initializeDB, updateItemStatus, createQueuedItem } from '../lib/db';
 import { generateVectors } from '../lib/ai';
+import { item } from '../drizzle/schema';
 
 const BBC_NEWS_PREFIX = 'https://www.bbc.com/news/articles/';
 const BBC_SPORT_PREFIX = 'https://www.bbc.com/sport/articles/';
@@ -24,8 +22,8 @@ const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
  */
 export async function handleQueue(batch: any, env: Env) {
   const messages = parseMessages(batch);
-  const prisma = initializePrisma(env);
-  const inserted = await processMessages(messages, env, prisma);
+  const db = initializeDB(env);
+  const inserted = await processMessages(messages, env, db);
   logger.log(JSON.stringify(inserted));
 }
 
@@ -44,13 +42,13 @@ function parseMessages(batch: any): Array<Message> {
  *
  * @param messages - The array of messages to process.
  * @param env - The environment object containing various services.
- * @param prisma - The Prisma client for database operations.
+ * @param db - The client for database operations.
  * @returns A promise that resolves to an array of inserted items.
  */
 async function processMessages(
   messages: Array<Message>,
   env: Env,
-  prisma: PrismaClient
+  db: DrizzleD1Database
 ): Promise<any[]> {
   logger.log(`Processing ${messages.length} messages`);
   const inserted: any[] = [];
@@ -59,10 +57,10 @@ async function processMessages(
     const { type, id, data } = message.body;
 
     if (type === 'rss') {
-      const rssInserted = await processRSSMessage(id, prisma, env);
+      const rssInserted = await processRSSMessage(id, db, env);
       inserted.push(...rssInserted);
     } else if (type === 'entry') {
-      const entryInserted = await processEntryMessage(id, data, prisma, env);
+      const entryInserted = await processEntryMessage(id, data, db, env);
       if (entryInserted) {
         inserted.push(entryInserted);
       }
@@ -76,13 +74,13 @@ async function processMessages(
  * Processes an RSS message, fetching and queuing RSS feed entries.
  *
  * @param id - The ID of the RSS feed.
- * @param prisma - The Prisma client for database operations.
+ * @param db - The client for database operations.
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to an array of inserted items.
  */
 async function processRSSMessage(
   id: string,
-  prisma: PrismaClient,
+  db: DrizzleD1Database,
   env: Env
 ): Promise<any[]> {
   logger.log('Fetching RSS feed:', id);
@@ -90,7 +88,7 @@ async function processRSSMessage(
   const allEntries = stories.entries || [];
 
   const entryIds = allEntries.map((entry) => generateId(entry));
-  const existingEntries = await fetchExistingEntries(prisma, entryIds);
+  const existingEntries = await fetchExistingEntries(db, entryIds);
   const existingEntriesMap = new Map(
     existingEntries.map((entry) => [entry.id, entry.status])
   );
@@ -127,20 +125,23 @@ async function processRSSMessage(
 /**
  * Fetches existing entries from the database.
  *
- * @param prisma - The Prisma client for database operations.
+ * @param - The client for database operations.
  * @param entryIds - The IDs of the entries to fetch.
  * @returns A promise that resolves to an array of existing entries.
  */
-async function fetchExistingEntries(prisma: PrismaClient, entryIds: string[]) {
-  return prisma.item.findMany({
-    where: {
-      id: { in: entryIds },
-    },
-    select: {
-      id: true,
-      status: true,
-    },
-  });
+async function fetchExistingEntries(db: DrizzleD1Database, entryIds: string[]) {
+  try {
+    return db
+      .select({
+        id: item.id,
+        status: item.status,
+      })
+      .from(item)
+      .where(inArray(item.id, entryIds));
+  } catch (error) {
+    logger.error('Error fetching existing entries:', error);
+    throw error;
+  }
 }
 
 /**
@@ -148,14 +149,14 @@ async function fetchExistingEntries(prisma: PrismaClient, entryIds: string[]) {
  *
  * @param id - The ID of the entry.
  * @param data - The data of the entry.
- * @param prisma - The Prisma client for database operations.
+ * @param db - The client for database operations.
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to the inserted item.
  */
 async function processEntryMessage(
   id: string,
   data: { text: string; metadata: Record<string, any> },
-  prisma: PrismaClient,
+  db: DrizzleD1Database,
   env: Env
 ): Promise<any> {
   const { text: parsedString, metadata } = data;
@@ -165,7 +166,7 @@ async function processEntryMessage(
     logger.log('No text for', id);
     return null;
   }
-  await createQueuedItem(prisma, id, parsedString, metadata);
+  await createQueuedItem(db, id, parsedString, metadata);
 
   let queryText = parsedString;
   let hasExtendedContent = false;
@@ -180,7 +181,7 @@ async function processEntryMessage(
     logger.error('Error fetching content:', e);
   }
 
-  await updateItemStatus(prisma, id, 'processing', queryText);
+  await updateItemStatus(db, id, 'processing', queryText);
 
   const vectors = await generateVectors(env, id, queryText, {
     ...metadata,
@@ -188,7 +189,7 @@ async function processEntryMessage(
   });
   const insertedItem = await env.VECTORIZE.upsert(vectors);
 
-  await updateItemStatus(prisma, id, 'processed');
+  await updateItemStatus(db, id, 'processed');
   return insertedItem;
 }
 

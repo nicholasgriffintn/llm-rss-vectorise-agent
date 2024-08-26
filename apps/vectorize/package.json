@@ -7,20 +7,21 @@
     "start": "wrangler dev",
     "test:types": "tsc --noEmit",
     "wrangler": "wrangler",
-    "db:init": "npx wrangler d1 migrations create llm-rss-vectorise-agent init",
-    "db:migrate": "npx wrangler d1 migrations apply llm-rss-vectorise-agent",
-    "db:prisma:migrate": "npx prisma migrate diff --script --from-schema-datamodel ./prisma/schema.prisma --to-migrations ./prisma/migrations",
-    "db:prisma:generate": "npx prisma generate"
+    "local:migrations:apply": "wrangler d1 migrations apply llm-rss-vectorise-agent --local",
+    "local:d1:init": "npm run local:migrations:apply && wrangler d1 execute llm-rss-vectorise-agent --file='./fixtures/data.sql' --local",
+    "migrations:apply": "wrangler d1 migrations apply llm-rss-vectorise-agent",
+    "d1:new": "wrangler d1 create llm-rss-vectorise-agent",
+    "d1:init": "npm run migrations:apply && wrangler d1 execute llm-rss-vectorise-agent --file='./fixtures/data.sql'"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240712.0",
+    "drizzle-kit": "^0.24.2",
     "typescript": "^5.5.4",
     "wrangler": "^3.72.2"
   },
   "dependencies": {
-    "@prisma/adapter-d1": "^5.18.0",
-    "@prisma/client": "^5.18.0",
     "cheerio": "^1.0.0",
+    "drizzle-orm": "^0.33.0",
     "fast-xml-parser": "^4.4.1",
     "prisma": "^5.18.0"
   }

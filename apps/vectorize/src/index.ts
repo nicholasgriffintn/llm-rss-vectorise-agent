@@ -3,7 +3,6 @@ import { handleQueue } from './handlers/queue';
 import { handleQuery } from './handlers/query';
 import { handleClean } from './handlers/clean';
 import type { Env } from './types';
-import { initializePrisma } from './lib/db';
 
 /**
  * Handles the fetch request by routing to the appropriate handler based on the request path.
@@ -22,8 +21,6 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
   if (!env.VECTORIZE || !env.AI || !env.DB || !env.MAIN_QUEUE) {
     return new Response('Service not available', { status: 500 });
   }
-
-  const prisma = initializePrisma(env);
 
   if (path === '/insert') {
     const queued = await handleInsert(env);

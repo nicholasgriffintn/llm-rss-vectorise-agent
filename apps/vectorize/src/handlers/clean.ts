@@ -1,5 +1,8 @@
+import { eq } from 'drizzle-orm';
+
 import type { Env } from '../types';
-import { initializePrisma } from '../lib/db';
+import { initializeDB } from '../lib/db';
+import { item } from '../drizzle/schema';
 
 /**
  * Handles cleaning up queued items.
@@ -10,14 +13,17 @@ import { initializePrisma } from '../lib/db';
 
 export async function handleClean(env: Env): Promise<{
   message: string;
+  data: { deletedId: string }[];
 }> {
-  const prisma = initializePrisma(env);
+  const db = initializeDB(env);
 
-  const cleaned = await prisma.item.deleteMany({
-    where: { status: 'queued' },
-  });
+  const cleaned = await db
+    .delete(item)
+    .where(eq(item.status, 'queued'))
+    .returning({ deletedId: item.id });
 
   return Promise.resolve({
-    message: `Cleaned ${cleaned.count} items`,
+    message: 'Cleaned up queued items',
+    data: cleaned,
   });
 }
