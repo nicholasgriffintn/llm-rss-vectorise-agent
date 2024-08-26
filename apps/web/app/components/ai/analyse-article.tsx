@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 export function AnalyseArticle({ id }: { id: string }) {
-  const analyseArticle = useFetcher<string>();
+  const analyseArticle = useFetcher<string | {
+    success: boolean;
+    message: string;
+  }>();
 
   const [response, setResponse] = useState('');
 
   useEffect(() => {
-    if (analyseArticle.data) {
+    if (analyseArticle.data && typeof analyseArticle.data === 'string') {
       const dataStream = analyseArticle.data.split('\n');
       dataStream.forEach((data) => {
         if (data && data !== 'data: [DONE]') {
@@ -39,7 +42,7 @@ export function AnalyseArticle({ id }: { id: string }) {
     <div>
       {analyseArticle.state === 'submitting' && <p>Analysing...</p>}
       {analyseArticle.state === 'loading' && <p>Loading...</p>}
-      {analyseArticle?.data ? (
+      {response ? (
         <div className="prose">
           <ReactMarkdown>{response}</ReactMarkdown>
         </div>

@@ -27,6 +27,7 @@ export async function handleQuery(userQuery: string, env: Env) {
   }
 
   if (
+    env.ENVIRONMENT === 'development' ||
     typeof process !== 'undefined' &&
     process?.env?.ENVIRONMENT === 'development'
   ) {
