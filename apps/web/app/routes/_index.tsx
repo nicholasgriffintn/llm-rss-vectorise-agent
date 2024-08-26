@@ -84,36 +84,26 @@ export default function Index() {
             <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
             <ul className="list-disc ml-4">
               <li className="text-sm text-left">
-                Add a summarise modal and method that uses AI to summarise the
-                article.
-                <ul className="list-disc ml-4">
-                  <li className="text-sm text-left">
-                    If Hacker News, this will need to act differently, as it
-                    will need to summarise the comments.
-                  </li>
-                  <li className="text-sm text-left">
-                    For BBC Sounds, it also audio content.
-                  </li>
-                </ul>
+                The frontend doesn&apos;t currently update the output from the
+                AI as it streams in, even though the backend is streaming it
+                through EventStream.
               </li>
               <li className="text-sm text-left">
-                Add a analyse modal and method that uses AI to analyse the
-                article.
-                <ul className="list-disc ml-4">
-                  <li className="text-sm text-left">
-                    Like summarise, this will need to act differently between
-                    the sites.
-                  </li>
-                </ul>
+                Work out how best to make use of lora adapters, a bit of
+                investigation to happen here.
+              </li>
+              <li className="text-sm text-left">
+                For some reason, the AI is adding gibberish to the start of the
+                response.
+              </li>
+              <li className="text-sm text-left">
+                Add a chatbot interface to discuss articles.
               </li>
               <li className="text-sm text-left">
                 Add the ability for users to submit sites to be indexed.
               </li>
               <li className="text-sm text-left">
                 Add the ability for users to add notes about the articles.
-              </li>
-              <li className="text-sm text-left">
-                Add a chatbot interface to discuss articles.
               </li>
             </ul>
           </div>
