@@ -1,9 +1,10 @@
-import type { Config } from "tailwindcss";
+/* eslint-disable @typescript-eslint/no-require-imports */
+import type { Config } from 'tailwindcss';
 
 export default {
-  content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+  content: ['./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 } satisfies Config;
