@@ -31,3 +31,4 @@ This is the web interface for the Vectorise app, it allows you to search the dat
 - [ ] A new feature to chat about the article with AI would be cool.
 - [ ] Look into adding the ability for users to submit sites to be indexed.
 - [ ] Add a way for users to add additional notes about articles.
+- [ ] For the summarise and analyse features, we should be checking the response to make sure it is correctly quoting the article and isn't making up information.
