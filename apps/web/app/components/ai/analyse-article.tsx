@@ -1,5 +1,7 @@
 import { useFetcher } from '@remix-run/react';
 
+import { Button } from '../ui/button';
+
 export function AnalyseArticle({ id }: { id: string }) {
   const analyseArticle = useFetcher();
 
@@ -12,8 +14,11 @@ export function AnalyseArticle({ id }: { id: string }) {
 
   return (
     <div>
-      <h2>Analyse Article</h2>
-      <button onClick={handleAnalyse}>Analyse</button>
+      <h2>
+        This won&apos;t do anything yet, clicking the button below will call the
+        API, however, I&apos;m yet to figure out streaming.
+      </h2>
+      <Button onClick={handleAnalyse}>Analyse</Button>
     </div>
   );
 }
