@@ -10,8 +10,8 @@ import { initializeDB, updateItemStatus, createQueuedItem } from '../lib/db';
 import { generateVectors } from '../lib/ai';
 import { item } from '../drizzle/schema';
 
-const BBC_NEWS_PREFIX = 'https://www.bbc.com/news/articles/';
-const BBC_SPORT_PREFIX = 'https://www.bbc.com/sport/articles/';
+const BBC_NEWS_PREFIX = /^https:\/\/www\.bbc\.com\/news\/.+\/articles\/.+$/;
+const BBC_SPORT_PREFIX = /^https:\/\/www\.bbc\.com\/sport\/.+\/articles\/.+$/;
 const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
 
 /**
@@ -245,10 +245,7 @@ async function fetchAndParseContent(
 function getUrlToUse(url: string): string | null {
   if (url.startsWith(GUARDIAN_PREFIX)) {
     return `${url}.json`;
-  } else if (
-    url.startsWith(BBC_NEWS_PREFIX) ||
-    url.startsWith(BBC_SPORT_PREFIX)
-  ) {
+  } else if (BBC_NEWS_PREFIX.test(url) || BBC_SPORT_PREFIX.test(url)) {
     return `${url}.amp`;
   }
   return null;
