@@ -168,9 +168,13 @@ async function processEntryMessage(
   await createQueuedItem(prisma, id, parsedString, metadata);
 
   let queryText = parsedString;
+  let hasExtendedContent = false;
   try {
     if (metadata.url) {
-      queryText = await fetchAndParseContent(metadata.url, queryText);
+      const { queryText: newQueryText, completed: fetchCompleted } =
+        await fetchAndParseContent(metadata.url, queryText);
+      queryText = newQueryText;
+      hasExtendedContent = fetchCompleted;
     }
   } catch (e) {
     logger.error('Error fetching content:', e);
@@ -178,7 +182,10 @@ async function processEntryMessage(
 
   await updateItemStatus(prisma, id, 'processing', queryText);
 
-  const vectors = await generateVectors(env, id, queryText, metadata);
+  const vectors = await generateVectors(env, id, queryText, {
+    ...metadata,
+    hasExtendedContent,
+  });
   const insertedItem = await env.VECTORIZE.upsert(vectors);
 
   await updateItemStatus(prisma, id, 'processed');
@@ -195,8 +202,12 @@ async function processEntryMessage(
 async function fetchAndParseContent(
   url: string,
   defaultText: string
-): Promise<string> {
+): Promise<{
+  queryText: string;
+  completed: boolean;
+}> {
   let queryText = defaultText;
+  let completed = false;
   const urlToUse = getUrlToUse(url);
 
   if (urlToUse) {
@@ -207,13 +218,21 @@ async function fetchAndParseContent(
       const content = urlToUse.endsWith('.json')
         ? await response.json()
         : await response.text();
-      queryText = parseFetchedContent(content, urlToUse);
+      const newQueryText = parseFetchedContent(content, urlToUse);
+
+      if (newQueryText) {
+        queryText = newQueryText;
+        completed = true;
+      }
     } catch (error) {
       logger.error(`Failed to fetch the page. Error: ${error}`);
     }
   }
 
-  return queryText;
+  return {
+    queryText,
+    completed,
+  };
 }
 
 /**

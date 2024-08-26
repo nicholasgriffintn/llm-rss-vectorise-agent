@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment } from 'react';
 import { UserRoundPen, Calendar } from 'lucide-react';
 
@@ -118,10 +119,8 @@ export const SearchResultItem = ({
         height?: number;
         credit?: string;
       };
-      [key: string]: {
-        url?: string;
-        label: string;
-      };
+      hasExtendedContent?: boolean;
+      [key: string]: any;
     };
     score: number;
   };
@@ -261,42 +260,44 @@ export const SearchResultItem = ({
                 </div>
               ) : null}
             </CardContent>
-            <CardFooter className="flex flex-wrap justify-end space-x-2 space-y-2 sm:space-y-0 bg-muted/50 py-2">
-              <Modal
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full sm:w-auto"
-                  >
-                    Summarise
-                  </Button>
-                }
-                title="Summarise article"
-                description="Use AI to generate a summary of the article."
-              >
-                <div className="flex items-center space-x-2">
-                  Coming soon...
-                </div>
-              </Modal>
-              <Modal
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full sm:w-auto"
-                  >
-                    Analyse
-                  </Button>
-                }
-                title="Analyse article"
-                description="Use AI to analyse the article."
-              >
-                <div className="flex items-center space-x-2">
-                  Coming soon...
-                </div>
-              </Modal>
-            </CardFooter>
+            {result.metadata.hasExtendedContent && (
+              <CardFooter className="flex flex-wrap justify-end space-x-2 space-y-2 sm:space-y-0 bg-muted/50 py-2">
+                <Modal
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                    >
+                      Summarise
+                    </Button>
+                  }
+                  title="Summarise article"
+                  description="Use AI to generate a summary of the article."
+                >
+                  <div className="flex items-center space-x-2">
+                    Coming soon...
+                  </div>
+                </Modal>
+                <Modal
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                    >
+                      Analyse
+                    </Button>
+                  }
+                  title="Analyse article"
+                  description="Use AI to analyse the article."
+                >
+                  <div className="flex items-center space-x-2">
+                    Coming soon...
+                  </div>
+                </Modal>
+              </CardFooter>
+            )}
           </div>
         </div>
       </Card>
