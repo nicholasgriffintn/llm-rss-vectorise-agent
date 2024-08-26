@@ -26,7 +26,6 @@ This is the web interface for the Vectorise app, it allows you to search the dat
 
 #### TODO
 
-- [ ] For the Summarise and Analyse views, the information doesn't show until the API has returned the full response, even though it implements EventSource, we need to look at how to stream the response instead with Remix.
 - [ ] Some attempt was made to use lora adapters, however, this never seemed to work, some investigation needs to be done here, it would also be interesting to see if we can use custom adapters.
 - [ ] For some reason, the AI is adding gibberish to the start of the response.
 - [ ] A new feature to chat about the article with AI would be cool.

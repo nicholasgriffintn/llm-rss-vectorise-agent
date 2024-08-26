@@ -84,11 +84,6 @@ export default function Index() {
             <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
             <ul className="list-disc ml-4">
               <li className="text-sm text-left">
-                The frontend doesn&apos;t currently update the output from the
-                AI as it streams in, even though the backend is streaming it
-                through EventStream.
-              </li>
-              <li className="text-sm text-left">
                 Work out how best to make use of lora adapters, a bit of
                 investigation to happen here.
               </li>
