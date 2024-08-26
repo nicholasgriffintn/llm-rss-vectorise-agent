@@ -1,52 +1,35 @@
-import { useFetcher } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+import { useEventSource } from '../../lib/use-event-source';
+
 export function AnalyseArticle({ id }: { id: string }) {
-  const analyseArticle = useFetcher<string | {
-    success: boolean;
-    message: string;
-  }>();
+  const { data: chunk, isOpen } = useEventSource(`/ai/analyse?id=${id}`, {
+    closeOnData: "[DONE]",
+  });
 
   const [response, setResponse] = useState('');
 
   useEffect(() => {
-    if (analyseArticle.data && typeof analyseArticle.data === 'string') {
-      const dataStream = analyseArticle.data.split('\n');
-      dataStream.forEach((data) => {
-        if (data && data !== 'data: [DONE]') {
-          try {
-            const jsonString = data.replace('data: ', '');
-            const parsedData = JSON.parse(jsonString);
-            setResponse((prevResponse) => prevResponse + parsedData.response);
-          } catch (error) {
-            console.error('Failed to parse JSON:', error);
-          }
+    if (chunk) {
+      try {
+        const parsedChunk = JSON.parse(chunk);
+
+        if (parsedChunk.response) {
+          setResponse((r) => r.concat(parsedChunk.response));
         }
-      });
+      } catch (e) {
+        console.error(e);
+      }
     }
-  }, [analyseArticle.data]);
-
-  const handleanalyse = async () => {
-    analyseArticle.submit(
-      { id },
-      { action: '/action/ai-analyse', method: 'post' }
-    );
-  };
-
-  useEffect(() => {
-    handleanalyse();
-  }, []);
+  }, [chunk]);
 
   return (
-    <div>
-      {analyseArticle.state === 'submitting' && <p>Analysing...</p>}
-      {analyseArticle.state === 'loading' && <p>Loading...</p>}
+    <>
       {response ? (
-        <div className="prose">
-          <ReactMarkdown>{response}</ReactMarkdown>
-        </div>
+        <ReactMarkdown>{response}</ReactMarkdown>
       ) : null}
-    </div>
+      {isOpen && <span className="cursor">...</span>}
+    </>
   );
 }

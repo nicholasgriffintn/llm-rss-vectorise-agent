@@ -8,7 +8,7 @@ import { loraModel, gatewayId } from '../lib/ai';
 import { item } from '../drizzle/schema';
 import articleFixture from '../../test/fixtures/article.json';
 
-export async function action({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
     const userAgent = request.headers.get('User-Agent') || '';
 
@@ -17,8 +17,8 @@ export async function action({ request, context }: LoaderFunctionArgs) {
       return null;
     }
 
-    const body = await request.formData();
-    const articleId = body.get('id');
+    const url = new URL(request.url);
+    const articleId = url.searchParams.get('id');
 
     if (!articleId) {
       return json({
@@ -31,14 +31,17 @@ export async function action({ request, context }: LoaderFunctionArgs) {
 
     let matchingItem: {
       id: string;
-      text: string | null
-    }[]= [];
+      text: string | null;
+    }[] = [];
 
     if (env.ENVIRONMENT === 'development') {
       matchingItem = [articleFixture];
     } else {
       const db = drizzle(env.DB);
-      const itemResponse = await db.select().from(item).where(eq(item.id, articleId as string))
+      const itemResponse = await db
+        .select()
+        .from(item)
+        .where(eq(item.id, articleId as string));
       if (itemResponse?.length) {
         matchingItem = itemResponse;
       }
@@ -52,7 +55,7 @@ export async function action({ request, context }: LoaderFunctionArgs) {
     }
 
     const article = matchingItem[0].text;
-    const answer = await env.AI.run(
+    const response = await env.AI.run(
       loraModel,
       {
         stream: true,
@@ -93,10 +96,11 @@ Analysis: </s>`,
       }
     );
 
-    // TODO: Get this to stream, not working yet
-    return new Response(answer, {
+    return new Response(response, {
       headers: {
         'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {

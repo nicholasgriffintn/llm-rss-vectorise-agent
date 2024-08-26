@@ -1,52 +1,35 @@
-import { useFetcher } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+import { useEventSource } from '../../lib/use-event-source';
+
 export function SummariseArticle({ id }: { id: string }) {
-  const summariseArticle = useFetcher<string | {
-    success: boolean;
-    message: string;
-  }>();
+  const { data: chunk, isOpen } = useEventSource(`/ai/summarise?id=${id}`, {
+    closeOnData: "[DONE]",
+  });
 
   const [response, setResponse] = useState('');
 
   useEffect(() => {
-    if (summariseArticle.data && typeof summariseArticle.data === 'string') {
-      const dataStream = summariseArticle.data.split('\n');
-      dataStream.forEach((data) => {
-        if (data && data !== 'data: [DONE]') {
-          try {
-            const jsonString = data.replace('data: ', '');
-            const parsedData = JSON.parse(jsonString);
-            setResponse((prevResponse) => prevResponse + parsedData.response);
-          } catch (error) {
-            console.error('Failed to parse JSON:', error);
-          }
+    if (chunk) {
+      try {
+        const parsedChunk = JSON.parse(chunk);
+
+        if (parsedChunk.response) {
+          setResponse((r) => r.concat(parsedChunk.response));
         }
-      });
+      } catch (e) {
+        console.error(e);
+      }
     }
-  }, [summariseArticle.data]);
-
-  const handleSummarise = async () => {
-    summariseArticle.submit(
-      { id },
-      { action: '/action/ai-summarise', method: 'post' }
-    );
-  };
-
-  useEffect(() => {
-    handleSummarise();
-  }, []);
+  }, [chunk]);
 
   return (
     <>
-      {summariseArticle.state === 'submitting' && <p>Summarising...</p>}
-      {summariseArticle.state === 'loading' && <p>Loading...</p>}
       {response ? (
-        <div className="prose">
-          <ReactMarkdown>{response}</ReactMarkdown>
-        </div>
+        <ReactMarkdown>{response}</ReactMarkdown>
       ) : null}
+      {isOpen && <span className="cursor">...</span>}
     </>
   );
 }

@@ -108,7 +108,7 @@ export default function Index() {
             </ul>
           </div>
         )}
-        {state !== 'idle' ? (
+        {state !== 'idle' && hasSearched ? (
           <LoadingSpinner className="mt-8">
             <span className="ml-2">Loading results...</span>
           </LoadingSpinner>
