@@ -4,7 +4,4 @@ This is a project that uses Cloudflare AI with Vectorize to make RSS feeds searc
 
 ## Demo
 
-<video width="640" height="420" controls poster="docs/demo.png">
-  <source src="docs/demo.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
+https://github.com/nicholasgriffintn/llm-rss-vectorise-agent/raw/main/docs/demo.mp4
