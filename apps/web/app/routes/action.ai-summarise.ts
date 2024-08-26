@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/d1';
 
 import { loraModel, gatewayId } from '../lib/ai';
 import { item } from '../drizzle/schema';
+import articleFixture from '../../test/fixtures/article.json';
 
 export async function action({ request, context }: LoaderFunctionArgs) {
   try {
@@ -26,11 +27,22 @@ export async function action({ request, context }: LoaderFunctionArgs) {
       });
     }
 
-    // TODO: This needs to take an ID, fetch the article from the database, and summarise it
     const { env } = context.cloudflare;
 
-    const db = drizzle(env.DB);
-    const matchingItem = await db.select().from(item).where(eq(item.id, articleId as string))
+    let matchingItem: {
+      id: string;
+      text: string | null
+    }[]= [];
+
+    if (env.ENVIRONMENT === 'development') {
+      matchingItem = [articleFixture];
+    } else {
+      const db = drizzle(env.DB);
+      const itemResponse = await db.select().from(item).where(eq(item.id, articleId as string))
+      if (itemResponse?.length) {
+        matchingItem = itemResponse;
+      }
+    }
 
     if (!matchingItem?.length || !matchingItem[0].text) {
       return json({
@@ -77,7 +89,7 @@ Summary: </s>`,
       {
         gateway: {
           id: gatewayId,
-          skipCache: false,
+          skipCache: env.ENVIRONMENT === 'development',
           cacheTtl: 172800,
         },
       }
