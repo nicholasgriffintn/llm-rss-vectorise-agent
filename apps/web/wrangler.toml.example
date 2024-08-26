@@ -3,7 +3,6 @@ name = "llm-rss-vectorise-agent-web"
 compatibility_date = "2024-08-21"
 pages_build_output_dir = "./build/client"
 
-
 [[d1_databases]]
 binding = "DB"
 database_name = "llm-rss-vectorise-agent"

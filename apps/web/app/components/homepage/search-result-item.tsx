@@ -13,6 +13,8 @@ import {
 } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { RenderDate } from '../text/date';
+import { SummariseArticle } from '../ai/summarise-article';
+import { AnalyseArticle } from '../ai/analyse-article';
 
 function stripHtmlTagsAndDecode(html: string): string {
   // Replace paragraph tags with new lines
@@ -100,6 +102,7 @@ export const SearchResultItem = ({
   imagePosition = 'left',
 }: {
   result: {
+    id: string;
     metadata: {
       title: string;
       description: string;
@@ -276,7 +279,7 @@ export const SearchResultItem = ({
                   description="Use AI to generate a summary of the article."
                 >
                   <div className="flex items-center space-x-2">
-                    Coming soon...
+                    <SummariseArticle id={result.id} />
                   </div>
                 </Modal>
                 <Modal
@@ -293,7 +296,7 @@ export const SearchResultItem = ({
                   description="Use AI to analyse the article."
                 >
                   <div className="flex items-center space-x-2">
-                    Coming soon...
+                    <AnalyseArticle id={result.id} />
                   </div>
                 </Modal>
               </CardFooter>

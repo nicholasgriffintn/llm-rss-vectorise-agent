@@ -2,6 +2,22 @@
   "count": 15,
   "matches": [
     {
+      "id": "https://www.bbc.com/news/articles/c20le73e54vo",
+      "metadata": {
+        "url": "https://www.bbc.com/news/articles/c20le73e54vo",
+        "title": "Has the mystery of a beach 'ghost' railway been solved?",
+        "description": "An abandoned railway track has become an unlikely tourist attraction - but why is is there?",
+        "published": "Mon, 26 Aug 2024 06:19:32 GMT",
+        "thumbnail": {
+          "url": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/9ed5/live/fb41ac70-609a-11ef-b43e-6916dcba5cbf.jpg",
+          "width": "240",
+          "height": "135"
+        },
+        "hasExtendedContent": true
+      },
+      "score": 0.885438089
+    },
+    {
       "id": "https://www.bbc.com/news/articles/c89wlnz1nzko",
       "metadata": {
         "url": "https://www.bbc.com/news/articles/c89wlnz1nzko",
@@ -160,17 +176,6 @@
         "image": null
       },
       "score": 0.581974545
-    },
-    {
-      "id": "66c525bdb7720fe1d4e665fd",
-      "metadata": {
-        "url": "https://www.wired.com/story/power-metal-green-economy-is-hungry-for-copper/",
-        "title": "The Green Economy Is Hungry for Copper—and People Are Stealing, Fighting, and Dying to Feed It",
-        "description": "With the possible exception of gold, no other metal has caused as much destruction as copper. In the coming years, we’ll need more of it than ever.",
-        "published": "Thu, 22 Aug 2024 10:00:00 +0000",
-        "image": null
-      },
-      "score": 0.580390483
     },
     {
       "id": "66c3bd0d7e8f4ca98c1eee29",

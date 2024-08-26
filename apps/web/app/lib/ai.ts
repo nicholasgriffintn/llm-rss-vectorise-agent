@@ -1,6 +1,8 @@
 import matchesFixture from '../../test/fixtures/matches.json';
 
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
+export const generalModel = '@cf/mistral/mistral-7b-instruct-v0.1';
+export const loraModel = 'cf-public-cnn-summarization';
 
 export const gatewayId = 'llm-rss-vectorise-agent';
 
@@ -28,7 +30,7 @@ export async function handleQuery(userQuery: string, env: Env) {
     process?.env?.ENVIRONMENT === 'development'
   ) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
     return matchesFixture;
   }
 
@@ -60,7 +62,7 @@ export async function getQueryVector(
       gateway: {
         id: gatewayId,
         skipCache: false,
-        cacheTtl: 3360,
+        cacheTtl: 172800,
       },
     }
   );

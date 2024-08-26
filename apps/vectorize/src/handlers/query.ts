@@ -51,7 +51,7 @@ async function getQueryVector(
       gateway: {
         id: gatewayId,
         skipCache: false,
-        cacheTtl: 3360,
+        cacheTtl: 172800,
       },
     }
   );

@@ -55,7 +55,7 @@ export default function Index() {
         setHasSearched(false);
         setIsIntroVisible(true);
         setQuery('');
-        submit({ query: '' }); 
+        submit({ query: '' });
       }
     },
     [submit]

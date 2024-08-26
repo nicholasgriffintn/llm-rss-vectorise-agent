@@ -23,7 +23,7 @@ export async function generateVectors(
       gateway: {
         id: gatewayId,
         skipCache: false,
-        cacheTtl: 3360,
+        cacheTtl: 172800,
       },
     }
   );
