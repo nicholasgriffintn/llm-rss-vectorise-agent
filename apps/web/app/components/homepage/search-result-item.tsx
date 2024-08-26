@@ -278,7 +278,7 @@ export const SearchResultItem = ({
                   title="Summarise article"
                   description="Use AI to generate a summary of the article."
                 >
-                  <div className="flex items-center space-x-2">
+                  <div className="overflow-y-auto max-h-96">
                     <SummariseArticle id={result.id} />
                   </div>
                 </Modal>
@@ -295,7 +295,7 @@ export const SearchResultItem = ({
                   title="Analyse article"
                   description="Use AI to analyse the article."
                 >
-                  <div className="flex items-center space-x-2">
+                  <div className="overflow-y-auto max-h-96">
                     <AnalyseArticle id={result.id} />
                   </div>
                 </Modal>

@@ -1,24 +1,49 @@
 import { useFetcher } from '@remix-run/react';
-
-import { Button } from '../ui/button';
+import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 export function AnalyseArticle({ id }: { id: string }) {
-  const analyseArticle = useFetcher();
+  const analyseArticle = useFetcher<string>();
 
-  const handleAnalyse = async () => {
+  const [response, setResponse] = useState('');
+
+  useEffect(() => {
+    if (analyseArticle.data) {
+      const dataStream = analyseArticle.data.split('\n');
+      dataStream.forEach((data) => {
+        if (data && data !== 'data: [DONE]') {
+          try {
+            const jsonString = data.replace('data: ', '');
+            const parsedData = JSON.parse(jsonString);
+            setResponse((prevResponse) => prevResponse + parsedData.response);
+          } catch (error) {
+            console.error('Failed to parse JSON:', error);
+          }
+        }
+      });
+    }
+  }, [analyseArticle.data]);
+
+  const handleanalyse = async () => {
     analyseArticle.submit(
       { id },
       { action: '/action/ai-analyse', method: 'post' }
     );
   };
 
+  useEffect(() => {
+    handleanalyse();
+  }, []);
+
   return (
     <div>
-      <h2>
-        This won&apos;t do anything yet, clicking the button below will call the
-        API, however, I&apos;m yet to figure out streaming.
-      </h2>
-      <Button onClick={handleAnalyse}>Analyse</Button>
+      {analyseArticle.state === 'submitting' && <p>Analysing...</p>}
+      {analyseArticle.state === 'loading' && <p>Loading...</p>}
+      {analyseArticle?.data ? (
+        <div className="prose">
+          <ReactMarkdown>{response}</ReactMarkdown>
+        </div>
+      ) : null}
     </div>
   );
 }

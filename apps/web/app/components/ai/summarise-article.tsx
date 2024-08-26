@@ -1,9 +1,28 @@
 import { useFetcher } from '@remix-run/react';
-
-import { Button } from '../ui/button';
+import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 export function SummariseArticle({ id }: { id: string }) {
-  const summariseArticle = useFetcher();
+  const summariseArticle = useFetcher<string>();
+
+  const [response, setResponse] = useState('');
+
+  useEffect(() => {
+    if (summariseArticle.data) {
+      const dataStream = summariseArticle.data.split('\n');
+      dataStream.forEach((data) => {
+        if (data && data !== 'data: [DONE]') {
+          try {
+            const jsonString = data.replace('data: ', '');
+            const parsedData = JSON.parse(jsonString);
+            setResponse((prevResponse) => prevResponse + parsedData.response);
+          } catch (error) {
+            console.error('Failed to parse JSON:', error);
+          }
+        }
+      });
+    }
+  }, [summariseArticle.data]);
 
   const handleSummarise = async () => {
     summariseArticle.submit(
@@ -12,13 +31,19 @@ export function SummariseArticle({ id }: { id: string }) {
     );
   };
 
+  useEffect(() => {
+    handleSummarise();
+  }, []);
+
   return (
-    <div>
-      <h2>
-        This won&apos;t do anything yet, clicking the button below will call the
-        API, however, I&apos;m yet to figure out streaming.
-      </h2>
-      <Button onClick={handleSummarise}>Summarise</Button>
-    </div>
+    <>
+      {summariseArticle.state === 'submitting' && <p>Summarising...</p>}
+      {summariseArticle.state === 'loading' && <p>Loading...</p>}
+      {summariseArticle?.data ? (
+        <div className="prose">
+          <ReactMarkdown>{response}</ReactMarkdown>
+        </div>
+      ) : null}
+    </>
   );
 }
