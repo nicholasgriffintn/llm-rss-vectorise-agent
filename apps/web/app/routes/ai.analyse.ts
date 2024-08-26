@@ -55,12 +55,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     }
 
     const article = matchingItem[0].text;
-    const response = await env.AI.run(
-      loraModel,
-      {
-        stream: true,
-        raw: true,
-        prompt: `<s> [INST] You are a professional media analyst tasked with evaluating the presence of bias and political alignment in a given article. Your objective is to provide a comprehensive analysis that identifies any potential bias, political leanings, and the tone of the content.
+    return new Response(
+      await env.AI.run(
+        loraModel,
+        {
+          stream: true,
+          raw: true,
+          prompt: `<s> [INST] You are a professional media analyst tasked with evaluating the presence of bias and political alignment in a given article. Your objective is to provide a comprehensive analysis that identifies any potential bias, political leanings, and the tone of the content.
 
 Use the content provided under the heading "Article" and only that content to conduct your analysis. Do not embellish or add detail beyond the source material. The term "Article" is a placeholder for the actual content and should not be included in your output.
 
@@ -86,23 +87,23 @@ ${article}
 [/INST]
 
 Analysis: </s>`,
-      },
+        },
+        {
+          gateway: {
+            id: gatewayId,
+            skipCache: false,
+            cacheTtl: 172800,
+          },
+        }
+      ),
       {
-        gateway: {
-          id: gatewayId,
-          skipCache: false,
-          cacheTtl: 172800,
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
         },
       }
     );
-
-    return new Response(response, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
-    });
   } catch (error) {
     console.error(error);
 

@@ -13,11 +13,17 @@ export function SummariseArticle({ id }: { id: string }) {
   useEffect(() => {
     if (chunk) {
       try {
-        const parsedChunk = JSON.parse(chunk);
+        const parsedData = chunk.map((d) => JSON.parse(d));
 
-        if (parsedChunk.response) {
-          setResponse((r) => r.concat(parsedChunk.response));
+        if (parsedData.length === 0) {
+          return;
         }
+
+        const newResponse = parsedData.reduce((acc, curr) => {
+          return acc.concat(curr.response);
+        }, '');
+
+        setResponse(newResponse);
       } catch (e) {
         console.error(e);
       }
@@ -27,7 +33,9 @@ export function SummariseArticle({ id }: { id: string }) {
   return (
     <>
       {response ? (
-        <ReactMarkdown>{response}</ReactMarkdown>
+        <div className="prose">
+          <ReactMarkdown>{response}</ReactMarkdown>
+        </div>
       ) : null}
       {isOpen && <span className="cursor">...</span>}
     </>

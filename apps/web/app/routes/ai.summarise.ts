@@ -55,12 +55,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     }
 
     const article = matchingItem[0].text;
-    const response = await env.AI.run(
-      loraModel,
-      {
-        stream: true,
-        raw: true,
-        prompt: `<s> [INST] You have been given an article to summarize as a professional researcher. Your task is to provide a concise overview.
+
+    return new Response(
+      await env.AI.run(
+        loraModel,
+        {
+          stream: true,
+          raw: true,
+          prompt: `<s> [INST] You have been given an article to summarize as a professional researcher. Your task is to provide a concise overview.
 
 Use the content provided under the heading "Article" and only that content to conduct your analysis. Do not embellish or add detail beyond the source material. The term "Article" is a placeholder for the actual content and should not be included in your output.
 
@@ -88,23 +90,23 @@ ${article}
 [/INST]
 
 Summary: </s>`,
-      },
+        },
+        {
+          gateway: {
+            id: gatewayId,
+            skipCache: env.ENVIRONMENT === 'development',
+            cacheTtl: 172800,
+          },
+        }
+      ),
       {
-        gateway: {
-          id: gatewayId,
-          skipCache: env.ENVIRONMENT === 'development',
-          cacheTtl: 172800,
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
         },
       }
     );
-
-    return new Response(response, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
-    });
   } catch (error) {
     console.error(error);
 

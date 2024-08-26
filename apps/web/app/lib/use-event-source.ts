@@ -6,6 +6,7 @@ type EventSourceOptions = {
   init?: EventSourceInit;
   event?: string;
   closeOnData?: string;
+  setResponse?: (data: string) => void;
 };
 
 /**
@@ -18,7 +19,7 @@ export function useEventSource(
   url: string | URL,
   { event = 'message', closeOnData, init }: EventSourceOptions = {}
 ) {
-  const [data, setData] = useState<string | null>(null);
+  const [data, setData] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -26,15 +27,16 @@ export function useEventSource(
     eventSource.addEventListener(event ?? 'message', handler);
 
     // reset data if dependencies change
-    setData(null);
+    setData([]);
     setIsOpen(true);
 
     function handler(event: MessageEvent) {
+      console.log(event.data);
       if (event.data === closeOnData) {
         close();
         return;
       }
-      setData(event.data || 'UNKNOWN_EVENT_DATA');
+      setData((prevData) => [...prevData, event.data]);
     }
 
     function close() {
