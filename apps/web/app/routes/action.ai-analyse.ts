@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { isbot } from 'isbot';
 import { json } from '@remix-run/cloudflare';
 
-import { generalModel, loraModel, gatewayId } from '../lib/ai';
+import { loraModel, loraAdapter, gatewayId } from '../lib/ai';
 
 export async function action({ request, context }: LoaderFunctionArgs) {
   try {
@@ -29,7 +29,7 @@ export async function action({ request, context }: LoaderFunctionArgs) {
     const article = 'This is a test article';
     // TODO: Update this run to use the prompt
     const answer = await env.AI.run(
-      generalModel,
+      loraModel,
       {
         stream: true,
         raw: true,
@@ -39,7 +39,7 @@ export async function action({ request, context }: LoaderFunctionArgs) {
             content: `Summarize the following: ${article}`,
           },
         ],
-        lora: loraModel,
+        lora: loraAdapter,
       },
       {
         gateway: {

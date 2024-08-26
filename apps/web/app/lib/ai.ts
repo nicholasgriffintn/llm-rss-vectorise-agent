@@ -1,8 +1,8 @@
 import matchesFixture from '../../test/fixtures/matches.json';
 
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
-export const generalModel = '@cf/mistral/mistral-7b-instruct-v0.1';
-export const loraModel = 'cf-public-cnn-summarization';
+export const loraModel = '@cf/mistral/mistral-7b-instruct-v0.1';
+export const loraAdapter = 'cf-public-cnn-summarization';
 
 export const gatewayId = 'llm-rss-vectorise-agent';
 
