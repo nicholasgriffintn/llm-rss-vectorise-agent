@@ -61,11 +61,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         {
           stream: true,
           raw: true,
-          prompt: `<s> [INST] You are a professional media analyst tasked with evaluating the presence of bias and political alignment in a given article. Your objective is to provide a comprehensive analysis that identifies any potential bias, political leanings, and the tone of the content.
+          prompt: `<s> [INST] Your task is provide a comprehensive analysis that identifies any potential bias, political leanings, and the tone of the content, evaluating the presence of bias and political alignment in the article provided. Do not include any conversational phrases, personal comments, or introductions. Only provide the summary and necessary sections as outlined below. Provide your response in English only.
 
 Use the content provided under the heading "Article" and only that content to conduct your analysis. Do not embellish or add detail beyond the source material. The term "Article" is a placeholder for the actual content and should not be included in your output.
 
-When encountering a "REPLACED_IMAGE" tag, disregard the tag but consider the text below it as a description of the removed image.
+When encountering a "REPLACED_IMAGE" tag, disregard the tag but consider the text below it as a description of the removed image. When encountering a word starting with "Image source,", ignore it and the following text from the wider analysis. **Ignore any content in a language other than English.**
 
 Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity.
 
