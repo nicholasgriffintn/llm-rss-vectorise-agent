@@ -40,10 +40,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <footer className="w-full py-4 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-3xl py-4 px-4 sm:px-6 lg:px-8 m-auto items-center text-center">
               <p className="text-muted-foreground text-xs text-center">
-                Please note that this application was created for research
-                purposes only, it is not the intention to cause any negative
-                affects to the sites that the systems store or display. If you
-                would like your site removed from the system, please contact me.
+                This application was created for research purposes only, it is
+                not the intention to cause any negative affects to the sites
+                that the systems store or display. If you would like your site
+                removed from the system, please contact me.
+              </p>
+              <p className="text-muted-foreground text-xs text-center">
+                Also, when using the AI functionality, please be aware that the
+                services are being provided while in active development. I am
+                using some &quot;beta&quot; level services, investigating some
+                stuff I don&apos;t know a lot about and generally trying to work
+                out the best prompts.
+              </p>
+              <p>
+                <strong>DO NOT</strong> use the output of the AI to make any
+                decisions, it is provided as research only.
               </p>
             </div>
             <div className="flex items-center justify-center gap-2">
