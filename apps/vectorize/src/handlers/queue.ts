@@ -244,12 +244,13 @@ async function fetchAndParseContent(
  * @returns The URL to use for fetching content.
  */
 function getUrlToUse(url: string): string | null {
-  if (url.startsWith(GUARDIAN_PREFIX)) {
-    return `${url}.json`;
-  } else if (BBC_NEWS_PREFIX.test(url) || BBC_SPORT_PREFIX.test(url)) {
+  if (BBC_NEWS_PREFIX.test(url) || BBC_SPORT_PREFIX.test(url)) {
     return `${url}.amp`;
   }
-  return null;
+  if (url.startsWith(GUARDIAN_PREFIX)) {
+    return `${url}/amp`;
+  }
+  return url;
 }
 
 /**
@@ -260,7 +261,7 @@ function getUrlToUse(url: string): string | null {
  * @returns The parsed content.
  */
 function parseFetchedContent(content: any, url: string): string {
-  if (url.endsWith('.json')) {
+  if (url.startsWith(GUARDIAN_PREFIX)) {
     return parseGuardianContent(content);
   } else {
     return parseBBCContent(content);
@@ -273,14 +274,14 @@ function parseFetchedContent(content: any, url: string): string {
  * @param json - The JSON content.
  * @returns The parsed content.
  */
-function parseGuardianContent(json: any): string {
-  let headline = json.webTitle || '';
+function parseGuardianContent(html: any): string {
+  const $ = cheerio.load(html);
+  let headline = $('h1').text() || '';
   let textBlocks: string[] = [];
 
   try {
-    const htmlContent = json.html;
-    const $ = cheerio.load(htmlContent);
-    textBlocks = $('p')
+    textBlocks = $('#maincontent p')
+      .not('figure p')
       .map((i, el) => $(el).text() || '')
       .get();
   } catch (e) {
@@ -303,6 +304,8 @@ function parseBBCContent(html: string): string {
 
   try {
     textBlocks = $('main[role="main"] p')
+      .not('figure p')
+      .not('section p')
       .map((i, el) => $(el).text() || '')
       .get();
   } catch (e) {
