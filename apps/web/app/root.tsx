@@ -45,14 +45,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 that the systems store or display. If you would like your site
                 removed from the system, please contact me.
               </p>
-              <p className="text-muted-foreground text-xs text-center">
+              <p className="text-muted-foreground text-xs text-center mt-2 mb-2">
                 Also, when using the AI functionality, please be aware that the
                 services are being provided while in active development. I am
                 using some &quot;beta&quot; level services, investigating some
                 stuff I don&apos;t know a lot about and generally trying to work
                 out the best prompts.
               </p>
-              <p>
+              <p className="text-muted-foreground text-xs text-center">
                 <strong>DO NOT</strong> use the output of the AI to make any
                 decisions, it is provided as research only.
               </p>
