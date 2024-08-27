@@ -10,8 +10,9 @@ import { initializeDB, updateItemStatus, createQueuedItem } from '../lib/db';
 import { generateVectors } from '../lib/ai';
 import { item } from '../drizzle/schema';
 
-const BBC_NEWS_PREFIX = /^https:\/\/www\.bbc\.com\/news\/.+\/articles\/.+$/;
-const BBC_SPORT_PREFIX = /^https:\/\/www\.bbc\.com\/sport\/.+\/articles\/.+$/;
+const BBC_NEWS_PREFIX = /^https:\/\/www\.bbc\.com\/news(\/.+)?\/articles\/.+$/;
+const BBC_SPORT_PREFIX =
+  /^https:\/\/www\.bbc\.com\/sport(\/.+)?\/articles\/.+$/;
 const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
 
 /**
