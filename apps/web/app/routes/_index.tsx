@@ -79,30 +79,6 @@ export default function Index() {
           </div>
           {isIntroVisible && <ExampleSearches handleSearch={handleSearch} />}
         </div>
-        {isIntroVisible && (
-          <div>
-            <h2 className="text-sm font-bold mt-8 text-left">TODO List:</h2>
-            <ul className="list-disc ml-4">
-              <li className="text-sm text-left">
-                Work out how best to make use of lora adapters, a bit of
-                investigation to happen here.
-              </li>
-              <li className="text-sm text-left">
-                For some reason, the AI is adding gibberish to the start of the
-                response.
-              </li>
-              <li className="text-sm text-left">
-                Add a chatbot interface to discuss articles.
-              </li>
-              <li className="text-sm text-left">
-                Add the ability for users to submit sites to be indexed.
-              </li>
-              <li className="text-sm text-left">
-                Add the ability for users to add notes about the articles.
-              </li>
-            </ul>
-          </div>
-        )}
         {state !== 'idle' && hasSearched ? (
           <LoadingSpinner className="mt-8">
             <span className="ml-2">Loading results...</span>
