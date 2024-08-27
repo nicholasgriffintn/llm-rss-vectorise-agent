@@ -1,7 +1,7 @@
 import matchesFixture from '../../test/fixtures/matches.json';
 
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
-export const loraModel = '@cf/mistral/mistral-7b-instruct-v0.2-lora';
+export const loraModel = '@hf/mistral/mistral-7b-instruct-v0.2';
 // TODO: The adapter doesn't seem to work, this is a place for more investigation, see what can be done here.
 export const loraAdapter = 'cf-public-cnn-summarization';
 
