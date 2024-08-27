@@ -286,7 +286,7 @@ function parseGuardianContent(json: any): string {
     logger.error('Text elements not found');
   }
 
-  return [headline, ...textBlocks].join('\n');
+  return [headline, ...textBlocks].join('\n\n');
 }
 
 /**
@@ -308,5 +308,5 @@ function parseBBCContent(html: string): string {
     logger.error('Text elements not found');
   }
 
-  return [headline, ...textBlocks].join('\n');
+  return [headline, ...textBlocks].join('\n\n');
 }
