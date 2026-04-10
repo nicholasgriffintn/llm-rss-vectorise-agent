@@ -27,7 +27,7 @@ export async function fetchRSSFeed(
  * @param url - The URL of the RSS feed.
  * @returns A promise that resolves to the fetched response.
  */
-async function fetchFeed(url: string): Promise<Response> {
+async function fetchFeed(url: string) {
   return fetch(url);
 }
 

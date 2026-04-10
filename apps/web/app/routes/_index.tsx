@@ -42,7 +42,7 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
   }
 
   return json({
-    result: [],
+    result: { count: 0, matches: [] },
     query,
     sourceHost,
     topK,
@@ -60,6 +60,9 @@ export default function Index() {
   const [query, setQuery] = useState(data.query || '');
   const [hasSearched, setHasSearched] = useState(data.hasSearched);
   const [isIntroVisible, setIsIntroVisible] = useState(data.isIntroVisible);
+  const resultData = data.result && 'matches' in data.result
+    ? data.result
+    : { count: 0, matches: [] };
 
   const handleSearch = useCallback(
     (searchQuery: string) => {
@@ -105,7 +108,7 @@ export default function Index() {
             <span className="ml-2">Loading results...</span>
           </LoadingSpinner>
         ) : (
-          <>{hasSearched && <SearchResults data={data?.result || {}} />}</>
+          <>{hasSearched && <SearchResults data={resultData} />}</>
         )}
       </div>
     </div>

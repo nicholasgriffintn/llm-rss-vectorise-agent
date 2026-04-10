@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 const getImagePosition = (
   index: number,
   result: {
+    id?: string;
     metadata: {
       title: string;
       description: string;
@@ -32,49 +33,75 @@ const getImagePosition = (
   return positions[randomFactor];
 };
 
+type SearchResultMatch = {
+  id?: string;
+  metadata?: Record<string, unknown>;
+  score: number;
+};
+
+type SearchResultsData = {
+  count: number;
+  matches: Array<SearchResultMatch | null>;
+};
+
+function hasRenderableMetadata(match: SearchResultMatch | null): match is {
+  id?: string;
+  metadata: {
+    title: string;
+    description: string;
+    url: string;
+    author?: string;
+    published?: string;
+    updated?: string;
+    [key: string]: unknown;
+  };
+  score: number;
+} {
+  if (!match) {
+    return false;
+  }
+
+  return Boolean(
+    match.metadata &&
+      typeof match.metadata.title === 'string' &&
+      typeof match.metadata.description === 'string' &&
+      typeof match.metadata.url === 'string'
+  );
+}
+
 export const SearchResults = ({
   data,
 }: {
-  data: {
-    count: number;
-    matches: {
-      metadata: {
-        title: string;
-        description: string;
-        url: string;
-        author?: string;
-        published?: string;
-        updated?: string;
-      };
-      score: number;
-    }[];
-  };
-}) => (
-  <div className="w-full mt-4">
-    <h2 className="text-2xl font-bold mb-6 text-left">Search Results</h2>
-    {data ? (
+  data: SearchResultsData;
+}) => {
+  const renderableMatches = data.matches.filter(hasRenderableMetadata);
+
+  return (
+    <div className="w-full mt-4">
+      <h2 className="text-2xl font-bold mb-6 text-left">Search Results</h2>
       <ul className="space-y-4">
-        {data?.matches?.length > 0 ? (
-          data.matches.map((result, index) => (
+        {renderableMatches.length > 0 ? (
+          renderableMatches.map((result, index) => (
             <SearchResultItem
-              key={index}
-              result={result}
+              key={result.id || `${result.metadata.url}-${index}`}
+              result={{
+                ...result,
+                id: result.id || `${result.metadata.url}-${index}`,
+              }}
               imagePosition={getImagePosition(index, result)}
             />
           ))
         ) : (
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">No results found.</p>
         )}
       </ul>
-    ) : (
-      <p className="text-muted-foreground">No results found.</p>
-    )}
-    {data?.matches?.length > 0 && data.count >= 15 && (
+      {renderableMatches.length > 0 && data.count >= 15 && (
       <div className="mt-8 text-center">
         <Button variant="outline" disabled>
           Load More <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+};

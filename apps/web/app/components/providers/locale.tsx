@@ -1,11 +1,11 @@
 import { createContext, ReactNode, useContext } from 'react';
 
 type LocaleContext = {
-  locales: string[];
+  locales: readonly string[];
 };
 
 type LocaleContextProviderProps = {
-  locales: string[];
+  locales: readonly string[];
   children: ReactNode;
 };
 
