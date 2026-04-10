@@ -25,13 +25,30 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
 
   const url = new URL(request.url);
   const query = url.searchParams.get('query');
+  const sourceHost = url.searchParams.get('sourceHost');
+  const topKParam = Number(url.searchParams.get('topK'));
+  const topK = Number.isFinite(topKParam) ? topKParam : undefined;
 
   if (query) {
-    const result = await handleQuery(query, env);
-    return json({ result, query, hasSearched: true, isIntroVisible: false });
+    const result = await handleQuery(query, env, { sourceHost, topK });
+    return json({
+      result,
+      query,
+      sourceHost,
+      topK,
+      hasSearched: true,
+      isIntroVisible: false,
+    });
   }
 
-  return json({ result: [], query, hasSearched: false, isIntroVisible: true });
+  return json({
+    result: { count: 0, matches: [] },
+    query,
+    sourceHost,
+    topK,
+    hasSearched: false,
+    isIntroVisible: true,
+  });
 }
 
 export default function Index() {
@@ -43,6 +60,9 @@ export default function Index() {
   const [query, setQuery] = useState(data.query || '');
   const [hasSearched, setHasSearched] = useState(data.hasSearched);
   const [isIntroVisible, setIsIntroVisible] = useState(data.isIntroVisible);
+  const resultData = data.result && 'matches' in data.result
+    ? data.result
+    : { count: 0, matches: [] };
 
   const handleSearch = useCallback(
     (searchQuery: string) => {
@@ -50,7 +70,11 @@ export default function Index() {
         setHasSearched(true);
         setIsIntroVisible(false);
         setQuery(searchQuery);
-        submit({ query: searchQuery });
+        submit({
+          query: searchQuery,
+          sourceHost: data.sourceHost || '',
+          topK: data.topK || '',
+        });
       } else {
         setHasSearched(false);
         setIsIntroVisible(true);
@@ -84,7 +108,7 @@ export default function Index() {
             <span className="ml-2">Loading results...</span>
           </LoadingSpinner>
         ) : (
-          <>{hasSearched && <SearchResults data={data?.result || {}} />}</>
+          <>{hasSearched && <SearchResults data={resultData} />}</>
         )}
       </div>
     </div>
