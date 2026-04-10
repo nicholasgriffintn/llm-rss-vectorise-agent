@@ -6,6 +6,13 @@ export const loraModel = '@hf/mistral/mistral-7b-instruct-v0.2';
 export const loraAdapter = 'cf-public-cnn-summarization';
 
 export const gatewayId = 'llm-rss-vectorise-agent';
+const DEFAULT_TOP_K = 15;
+const MAX_TOP_K = 50;
+
+export type QueryOptions = {
+  topK?: number;
+  sourceHost?: string | null;
+};
 
 export interface EmbeddingResponse {
   shape: number[];
@@ -20,7 +27,11 @@ export interface EmbeddingResponse {
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to a Response object containing the matches.
  */
-export async function handleQuery(userQuery: string, env: Env) {
+export async function handleQuery(
+  userQuery: string,
+  env: Env,
+  options: QueryOptions = {}
+) {
   if (!userQuery) {
     console.error('No query provided');
     return { count: 0, matches: [] };
@@ -37,7 +48,7 @@ export async function handleQuery(userQuery: string, env: Env) {
   }
 
   const queryVector = await getQueryVector(userQuery, env);
-  const matches = await getMatches(queryVector, env);
+  const matches = await getMatches(queryVector, env, options);
 
   return matches;
 }
@@ -77,14 +88,47 @@ export async function getQueryVector(
  * @param env - The environment object containing various services.
  * @returns A promise that resolves to the matching results.
  */
-export async function getMatches(queryVector: EmbeddingResponse, env: Env) {
+export async function getMatches(
+  queryVector: EmbeddingResponse,
+  env: Env,
+  options: QueryOptions = {}
+) {
   if (!env.VECTORIZE) {
     console.error('VECTORIZE service not available');
     return [];
   }
 
-  return env.VECTORIZE.query(queryVector.data[0], {
-    topK: 15,
+  const topK = Number.isFinite(options.topK)
+    ? Math.max(1, Math.min(MAX_TOP_K, Math.floor(options.topK as number)))
+    : DEFAULT_TOP_K;
+
+  const response = await env.VECTORIZE.query(queryVector.data[0], {
+    topK,
     returnMetadata: true,
   });
+
+  if (!options.sourceHost) {
+    return response;
+  }
+
+  const normalisedHost = options.sourceHost.trim().toLowerCase();
+  const filteredMatches = response.matches.filter((match) => {
+    const metadataUrl = match.metadata?.url;
+
+    if (typeof metadataUrl !== 'string' || !metadataUrl) {
+      return false;
+    }
+
+    try {
+      return new URL(metadataUrl).hostname.toLowerCase() === normalisedHost;
+    } catch {
+      return false;
+    }
+  });
+
+  return {
+    ...response,
+    count: filteredMatches.length,
+    matches: filteredMatches,
+  };
 }

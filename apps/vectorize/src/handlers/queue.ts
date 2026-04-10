@@ -14,6 +14,7 @@ const BBC_NEWS_PREFIX = /^https:\/\/www\.bbc\.com\/news(\/.+)?\/articles\/.+$/;
 const BBC_SPORT_PREFIX =
   /^https:\/\/www\.bbc\.com\/sport(\/.+)?\/articles\/.+$/;
 const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
+const MAX_IDS_PER_QUERY = 250;
 
 /**
  * Handles the processing of a batch of messages from the queue.
@@ -131,14 +132,27 @@ async function processRSSMessage(
  * @returns A promise that resolves to an array of existing entries.
  */
 async function fetchExistingEntries(db: DrizzleD1Database, entryIds: string[]) {
+  if (entryIds.length === 0) {
+    return [];
+  }
+
   try {
-    return db
-      .select({
-        id: item.id,
-        status: item.status,
-      })
-      .from(item)
-      .where(inArray(item.id, entryIds));
+    const existingEntries: Array<{ id: string; status: string | null }> = [];
+
+    for (let i = 0; i < entryIds.length; i += MAX_IDS_PER_QUERY) {
+      const idBatch = entryIds.slice(i, i + MAX_IDS_PER_QUERY);
+      const result = await db
+        .select({
+          id: item.id,
+          status: item.status,
+        })
+        .from(item)
+        .where(inArray(item.id, idBatch));
+
+      existingEntries.push(...result);
+    }
+
+    return existingEntries;
   } catch (error) {
     logger.error('Error fetching existing entries:', error);
     throw error;
