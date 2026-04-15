@@ -1,7 +1,9 @@
+import { and, eq } from 'drizzle-orm';
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1';
 
 import type { Env } from '../types';
-import { item } from '../drizzle/schema';
+import { item, rssFeed } from '../drizzle/schema';
+import { defaultRssFeeds } from '../constants';
 
 /**
  * Initializes the client with the provided environment.
@@ -13,12 +15,34 @@ export function initializeDB(env: Env) {
   return drizzle(env.DB);
 }
 
+export async function getActiveRssFeeds(db: DrizzleD1Database) {
+  const feeds = await db
+    .select({ url: rssFeed.url })
+    .from(rssFeed)
+    .where(eq(rssFeed.isActive, true));
+
+  return feeds.length ? feeds.map((feed) => feed.url) : defaultRssFeeds;
+}
+
+export async function addRssFeed(db: DrizzleD1Database, url: string) {
+  await db
+    .insert(rssFeed)
+    .values({ url, isActive: true })
+    .onConflictDoUpdate({
+      target: rssFeed.url,
+      set: { isActive: true, updatedAt: new Date() },
+    });
+}
+
+export async function disableRssFeed(db: DrizzleD1Database, url: string) {
+  await db
+    .update(rssFeed)
+    .set({ isActive: false, updatedAt: new Date() })
+    .where(and(eq(rssFeed.url, url), eq(rssFeed.isActive, true)));
+}
+
 /**
  * Updates the status of an item in the database.
- *
- * @param db - The client for database operations.
- * @param id - The ID of the item to update.
- * @param status - The new status of the item.
  */
 export async function updateItemStatus(
   db: DrizzleD1Database,
@@ -46,13 +70,7 @@ export async function updateItemStatus(
 }
 
 /**
- * Updates the status of an item in the database.
- *
- * @param db - The client for database operations.
- * @param id - The ID of the item to update.
- * @param status - The new status of the item.
- * @param text - The text to update.
- * @param metadata - The metadata to update.
+ * Creates or updates a queued item.
  */
 export async function createQueuedItem(
   db: DrizzleD1Database,

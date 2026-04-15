@@ -3,13 +3,48 @@ import { handleQueue } from './handlers/queue';
 import { handleQuery } from './handlers/query';
 import { handleClean } from './handlers/clean';
 import type { Env } from './types';
+import { addRssFeed, disableRssFeed, getActiveRssFeeds, initializeDB } from './lib/db';
+
+async function handleFeeds(request: Request, env: Env): Promise<Response> {
+  const db = initializeDB(env);
+
+  if (request.method === 'GET') {
+    const feeds = await getActiveRssFeeds(db);
+    return Response.json({ feeds });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json<{ url?: string }>();
+
+    if (!body?.url) {
+      return Response.json({ error: 'Missing url' }, { status: 400 });
+    }
+
+    try {
+      const parsedUrl = new URL(body.url);
+      await addRssFeed(db, parsedUrl.toString());
+      return Response.json({ success: true, url: parsedUrl.toString() });
+    } catch {
+      return Response.json({ error: 'Invalid URL' }, { status: 400 });
+    }
+  }
+
+  if (request.method === 'DELETE') {
+    const body = await request.json<{ url?: string }>();
+
+    if (!body?.url) {
+      return Response.json({ error: 'Missing url' }, { status: 400 });
+    }
+
+    await disableRssFeed(db, body.url);
+    return Response.json({ success: true, url: body.url });
+  }
+
+  return Response.json({ error: 'Method not allowed' }, { status: 405 });
+}
 
 /**
  * Handles the fetch request by routing to the appropriate handler based on the request path.
- *
- * @param request - The incoming HTTP request.
- * @param env - The environment object containing various services.
- * @returns A promise that resolves to a Response object.
  */
 async function handleFetch(request: Request, env: Env): Promise<Response> {
   const path = new URL(request.url).pathname;
@@ -27,6 +62,10 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
     return Response.json(queued);
   }
 
+  if (path === '/feeds') {
+    return handleFeeds(request, env);
+  }
+
   if (path === '/clean') {
     const queued = await handleClean(env);
     return Response.json(queued);
@@ -35,17 +74,9 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
   return handleQuery(request, env);
 }
 
-/**
- * Handles the queue batch by processing the messages.
- *
- * @param batch - The batch of messages to process.
- * @param env - The environment object containing various services.
- */
 async function handleQueueBatch(batch: any, env: Env): Promise<void> {
   await handleQueue(batch, env);
 }
-
-// TODO: Need to split the work here, really, we should have one queue that triggers each URL and then another that inserts the data into the database
 
 export default {
   fetch: handleFetch,

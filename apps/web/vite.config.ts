@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import {
   vitePlugin as remix,
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
@@ -5,10 +6,18 @@ import {
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
+const sharedLocalPersistPath = fileURLToPath(
+  new URL('../vectorize/.wrangler/state/v3', import.meta.url)
+);
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    remixCloudflareDevProxy(),
+    remixCloudflareDevProxy({
+      persist: {
+        path: sharedLocalPersistPath,
+      },
+    }),
     remix({
       future: {
         v3_fetcherPersist: true,

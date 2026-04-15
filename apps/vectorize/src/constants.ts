@@ -1,4 +1,4 @@
-export const rssFeeds = [
+export const defaultRssFeeds = [
   'https://www.theverge.com/rss/index.xml',
   'https://feeds.bbci.co.uk/sport/rss.xml',
   'https://feeds.bbci.co.uk/news/england/rss.xml',

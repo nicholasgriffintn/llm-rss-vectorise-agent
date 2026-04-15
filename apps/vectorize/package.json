@@ -9,7 +9,7 @@
     "wrangler": "wrangler",
     "local:migrations:apply": "wrangler d1 migrations apply llm-rss-vectorise-agent --local",
     "local:d1:init": "npm run local:migrations:apply && wrangler d1 execute llm-rss-vectorise-agent --file='./fixtures/data.sql' --local",
-    "migrations:apply": "wrangler d1 migrations apply llm-rss-vectorise-agent",
+    "migrations:apply": "wrangler d1 migrations apply llm-rss-vectorise-agent --remote",
     "d1:new": "wrangler d1 create llm-rss-vectorise-agent",
     "d1:init": "npm run migrations:apply && wrangler d1 execute llm-rss-vectorise-agent --file='./fixtures/data.sql'"
   },
