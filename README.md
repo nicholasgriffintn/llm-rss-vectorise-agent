@@ -18,21 +18,6 @@ The [Vectorise](/apps/vectorize/README.md) app is a CloudFlare Workers app that 
    - `POST /feeds` with `{ "url": "https://example.com/rss.xml" }` adds/enables a feed.
    - `DELETE /feeds` with `{ "url": "https://example.com/rss.xml" }` disables a feed.
 
-#### Completed improvements
-
-- ✅ Extended article extraction now supports The Guardian and adds generic extraction fallback for additional sources.
-- ✅ RSS feeds can now be sourced from the database (`rss_feed` table), with defaults used as fallback.
-- ✅ Reduced risk of `Too Many SQL Variables` by deduplicating IDs and batching DB lookups more conservatively.
-
 ### Web
 
 This is the web interface for the Vectorise app. It allows users to search, summarise, analyse, chat about articles, and save article notes.
-
-#### Completed improvements
-
-- ✅ Updated AI invocation flow to reduce prompt token artifacts/gibberish and use chat-style prompts.
-- ✅ Added configurable LoRA model/adapter support via environment variables (`LORA_MODEL`, `LORA_ADAPTER`).
-- ✅ Added article chat feature (`/ai/chat`) and UI action button.
-- ✅ Added article notes feature (`/ai/notes`) and UI action button.
-- ✅ Added lightweight response quote verification warnings for summarise/analyse responses.
-- ✅ Added feed submission backend support so users can submit websites/feeds to be indexed (`POST /feeds`).
