@@ -10,6 +10,13 @@ Run the dev server:
 npm run dev
 ```
 
+The web app shares the local D1 state created by the vectorize worker. Apply the
+vectorize migrations before using features that read or write `item` rows:
+
+```sh
+pnpm --filter @llm-rss-vectorise-agent/vectorize run local:migrations:apply
+```
+
 To run Wrangler:
 
 ```sh

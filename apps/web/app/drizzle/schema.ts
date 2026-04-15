@@ -6,13 +6,17 @@ export const item = sqliteTable('item', {
     .primaryKey()
     .notNull()
     .default(sql`uuid()`),
-  createdAt: integer('created_at')
+  createdAt: integer('createdAt', {
+    mode: 'timestamp',
+  })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: integer('updated_at')
+  updatedAt: integer('updatedAt', {
+    mode: 'timestamp',
+  })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  status: text('status'),
+  status: text('status').notNull(),
   text: text('text'),
   metadata: text('metadata'),
   notes: text('notes'),
