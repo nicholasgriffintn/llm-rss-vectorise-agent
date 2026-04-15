@@ -14,15 +14,15 @@
     "d1:init": "npm run migrations:apply && wrangler d1 execute llm-rss-vectorise-agent --file='./fixtures/data.sql'"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240712.0",
-    "drizzle-kit": "^0.24.2",
-    "typescript": "^5.5.4",
-    "wrangler": "^3.72.2"
+    "@cloudflare/workers-types": "^4.20260415.1",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.2",
+    "wrangler": "^4.83.0"
   },
   "dependencies": {
-    "cheerio": "^1.0.0",
-    "drizzle-orm": "^0.33.0",
-    "fast-xml-parser": "^4.4.1",
-    "prisma": "^5.18.0"
+    "cheerio": "^1.2.0",
+    "drizzle-orm": "^0.45.2",
+    "fast-xml-parser": "^5.6.0",
+    "prisma": "^7.7.0"
   }
 }

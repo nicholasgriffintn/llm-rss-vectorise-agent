@@ -1,6 +1,6 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "llm-rss-vectorise-agent-web"
-compatibility_date = "2024-08-21"
+compatibility_date = "2026-03-15"
 pages_build_output_dir = "./build/client"
 
 [vars]
@@ -13,7 +13,9 @@ database_id = "<ID>"
 
 [ai]
 binding = "AI"
+remote = true
 
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "rss-embeddings"
+remote = true

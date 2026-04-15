@@ -9,7 +9,7 @@
     "start": "turbo start"
   },
   "dependencies": {
-    "turbo": "^2.0.6",
-    "wrangler": "^3.64.0"
+    "turbo": "^2.9.6",
+    "wrangler": "^4.83.0"
   }
 }

@@ -16,6 +16,6 @@ export const defaultRssFeeds = [
   'https://hnrss.org/frontpage',
 ];
 
-export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
+export const embeddingsModel = '@cf/baai/bge-m3';
 
 export const gatewayId = 'llm-rss-vectorise-agent';
