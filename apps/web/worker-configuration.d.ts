@@ -6,4 +6,5 @@ interface Env {
   VECTORIZE: VectorizeIndex;
   AI: AI;
   ENVIRONMENT: string;
+  USE_FIXTURES?: string;
 }

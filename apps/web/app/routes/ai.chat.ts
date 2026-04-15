@@ -4,6 +4,7 @@ import { json } from '@remix-run/cloudflare';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 
+import { shouldUseFixtures } from '../lib/env';
 import { runTextModel } from '../lib/ai';
 import { item } from '../drizzle/schema';
 import articleFixture from '../../test/fixtures/article.json';
@@ -26,10 +27,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     }
 
     const { env } = context.cloudflare;
+    const useFixtures = shouldUseFixtures(env);
 
     let matchingItem: { id: string; text: string | null }[] = [];
 
-    if (env.ENVIRONMENT === 'development') {
+    if (useFixtures) {
       matchingItem = [articleFixture];
     } else {
       const db = drizzle(env.DB);

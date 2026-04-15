@@ -6,12 +6,12 @@
   "scripts": {
     "build": "remix vite:build",
     "deploy": "npm run build && wrangler pages deploy",
-    "dev": "ENVIRONMENT=development remix vite:dev",
+    "dev": "ENVIRONMENT=development USE_FIXTURES=true remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "wrangler pages dev ./build/client --persist-to ../vectorize/.wrangler/state",
+    "start": "ENVIRONMENT=development USE_FIXTURES=true wrangler pages dev ./build/client --persist-to ../vectorize/.wrangler/state",
     "typecheck": "tsc",
     "typegen": "wrangler types",
-    "preview": "npm run build && wrangler pages dev --persist-to ../vectorize/.wrangler/state",
+    "preview": "npm run build && ENVIRONMENT=development USE_FIXTURES=true wrangler pages dev --persist-to ../vectorize/.wrangler/state",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

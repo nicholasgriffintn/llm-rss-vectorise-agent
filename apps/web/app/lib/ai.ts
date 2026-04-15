@@ -1,3 +1,4 @@
+import { isDevelopmentEnvironment, shouldUseFixtures } from './env';
 import matchesFixture from '../../test/fixtures/matches.json';
 
 export const embeddingsModel = '@cf/baai/bge-base-en-v1.5';
@@ -37,7 +38,7 @@ export async function runTextModel(
   const options: Record<string, any> = {
     gateway: {
       id: gatewayId,
-      skipCache: skipCache ?? env.ENVIRONMENT === 'development',
+      skipCache: skipCache ?? isDevelopmentEnvironment(env),
       cacheTtl: 172800,
     },
   };
@@ -87,11 +88,7 @@ export async function handleQuery(
     return { count: 0, matches: [] };
   }
 
-  if (
-    env.ENVIRONMENT === 'development' ||
-    typeof process !== 'undefined' &&
-    process?.env?.ENVIRONMENT === 'development'
-  ) {
+  if (shouldUseFixtures(env)) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return matchesFixture;

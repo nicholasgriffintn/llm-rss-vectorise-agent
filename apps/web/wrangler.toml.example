@@ -4,7 +4,8 @@ compatibility_date = "2026-03-15"
 pages_build_output_dir = "./build/client"
 
 [vars]
-ENVIRONMENT = "development"
+ENVIRONMENT = "production"
+USE_FIXTURES = "false"
 
 [[d1_databases]]
 binding = "DB"

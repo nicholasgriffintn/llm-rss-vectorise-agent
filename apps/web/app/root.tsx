@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center">
               <div className="flex items-center flex-shrink-0 text-primary mr-6">
                 <img
-                  src="https://nicholasgriffin.dev/avatar.png"
+                  src="/avatar.png"
                   alt="Nicholas Griffin's Avatar"
                   className="h-8 w-8 rounded-full"
                 />
