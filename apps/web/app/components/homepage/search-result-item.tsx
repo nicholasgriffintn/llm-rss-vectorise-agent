@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { UserRoundPen, Calendar } from 'lucide-react';
 
 import { Button } from '../ui/button';
@@ -47,7 +47,7 @@ function stripHtmlTagsAndDecode(html: string): string {
   return cleanedText.trim().replace(/\n+/g, '\n');
 }
 
-function renderTextWithNewLines(text: string, url: string): JSX.Element {
+function renderTextWithNewLines(text: string, url: string): ReactElement {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const continueReadingRegex = /Continue reading\.\.\./g;
 

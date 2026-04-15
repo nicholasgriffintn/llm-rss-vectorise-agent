@@ -7,7 +7,8 @@ logpush = true
 
 [[vectorize]]
 binding = "VECTORIZE"
-index_name = "llm-rss-embeddings"
+index_name = "rss-embeddings"
+remote = true
 
 [[d1_databases]]
 binding = "DB"
@@ -16,6 +17,7 @@ database_id = "<ID>"
 
 [ai]
 binding = "AI"
+remote = true
 
 [[queues.producers]]
  queue = "llm-rss-vectorise-agent"

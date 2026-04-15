@@ -13,7 +13,9 @@ database_id = "<ID>"
 
 [ai]
 binding = "AI"
+remote = true
 
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "rss-embeddings"
+remote = true
