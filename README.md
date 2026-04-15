@@ -8,27 +8,31 @@ https://github.com/user-attachments/assets/a77b4a33-20f9-4601-ba46-39ba798d7c6c
 
 ### Vectorise
 
-The [Vectorise](/apps/vectorize/README.md) app is a CloudFlare Workers app that has three triggers:
+The [Vectorise](/apps/vectorize/README.md) app is a CloudFlare Workers app that has the following triggers and endpoints:
 
-1. `insert` - This is triggered by calling the API URL with the endpoint `/insert`, it retrieves the list of RSS feeds and then queues them for processing.
-2. `query` - This is triggered by calling the API URL with the endpoint `/query` and a query string parameter `query`, it will pass the contents of the query to the Cloudflare AI model and return matching results.
-3. `queue` - This is triggered by Cloudflare Queues, which will send messages from the insert trigger either to process the RSS feed, or to process entries from the feed, for each entry, it will insert them into the Vectorize database as well as a Cloudflare D1 database.
+1. `insert` - Triggered by calling `/insert`; retrieves active RSS feeds and queues them for processing.
+2. `query` - Triggered by calling `/query?query=<your query>`; embeds the query and returns matching results.
+3. `queue` - Triggered by Cloudflare Queues to process RSS feed messages and article entry messages.
+4. `feeds` - Manage feed sources in D1:
+   - `GET /feeds` returns active RSS feeds.
+   - `POST /feeds` with `{ "url": "https://example.com/rss.xml" }` adds/enables a feed.
+   - `DELETE /feeds` with `{ "url": "https://example.com/rss.xml" }` disables a feed.
 
-#### TODO
+#### Completed improvements
 
-- [ ] Currently, we are only getting extended text for BBC News and Sport articles and The Guardian is currently failing on request, this should be fixed for the Guardian and expanded for other sources, some other logic may be required here for these sources.
-- [ ] The RSS feeds are hard coded, it would be interesting to see if we can allow the user to add new ones and source these from the database.
-- [ ] Since moving to Drizzle, we've been getting some "Too Many SQL Variables" errors, this needs to be investigated.
+- ✅ Extended article extraction now supports The Guardian and adds generic extraction fallback for additional sources.
+- ✅ RSS feeds can now be sourced from the database (`rss_feed` table), with defaults used as fallback.
+- ✅ Reduced risk of `Too Many SQL Variables` by deduplicating IDs and batching DB lookups more conservatively.
 
 ### Web
 
-This is the web interface for the Vectorise app, it allows you to search the database and view the results.
+This is the web interface for the Vectorise app. It allows users to search, summarise, analyse, chat about articles, and save article notes.
 
-#### TODO
+#### Completed improvements
 
-- [ ] Some attempt was made to use lora adapters, however, this never seemed to work, some investigation needs to be done here, it would also be interesting to see if we can use custom adapters.
-- [ ] For some reason, the AI is adding gibberish to the start of the response.
-- [ ] A new feature to chat about the article with AI would be cool.
-- [ ] Look into adding the ability for users to submit sites to be indexed.
-- [ ] Add a way for users to add additional notes about articles.
-- [ ] For the summarise and analyse features, we should be checking the response to make sure it is correctly quoting the article and isn't making up information.
+- ✅ Updated AI invocation flow to reduce prompt token artifacts/gibberish and use chat-style prompts.
+- ✅ Added configurable LoRA model/adapter support via environment variables (`LORA_MODEL`, `LORA_ADAPTER`).
+- ✅ Added article chat feature (`/ai/chat`) and UI action button.
+- ✅ Added article notes feature (`/ai/notes`) and UI action button.
+- ✅ Added lightweight response quote verification warnings for summarise/analyse responses.
+- ✅ Added feed submission backend support so users can submit websites/feeds to be indexed (`POST /feeds`).

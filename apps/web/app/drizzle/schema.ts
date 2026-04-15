@@ -15,4 +15,5 @@ export const item = sqliteTable('item', {
   status: text('status'),
   text: text('text'),
   metadata: text('metadata'),
+  notes: text('notes'),
 });

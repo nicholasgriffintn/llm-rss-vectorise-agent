@@ -15,6 +15,8 @@ import { Badge } from '../ui/badge';
 import { RenderDate } from '../text/date';
 import { SummariseArticle } from '../ai/summarise-article';
 import { AnalyseArticle } from '../ai/analyse-article';
+import { ChatArticle } from '../ai/chat-article';
+import { ArticleNotes } from '../ai/article-notes';
 
 function stripHtmlTagsAndDecode(html: string): string {
   // Replace paragraph tags with new lines
@@ -297,6 +299,40 @@ export const SearchResultItem = ({
                 >
                   <div className="overflow-y-auto max-h-96">
                     <AnalyseArticle id={result.id} />
+                  </div>
+                </Modal>
+                <Modal
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                    >
+                      Chat
+                    </Button>
+                  }
+                  title="Chat about article"
+                  description="Ask focused questions about this article."
+                >
+                  <div className="overflow-y-auto max-h-96">
+                    <ChatArticle id={result.id} />
+                  </div>
+                </Modal>
+                <Modal
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                    >
+                      Notes
+                    </Button>
+                  }
+                  title="Article notes"
+                  description="Save your own notes for this article."
+                >
+                  <div className="overflow-y-auto max-h-96">
+                    <ArticleNotes id={result.id} />
                   </div>
                 </Modal>
               </CardFooter>

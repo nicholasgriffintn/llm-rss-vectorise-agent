@@ -14,14 +14,8 @@ const BBC_NEWS_PREFIX = /^https:\/\/www\.bbc\.com\/news(\/.+)?\/articles\/.+$/;
 const BBC_SPORT_PREFIX =
   /^https:\/\/www\.bbc\.com\/sport(\/.+)?\/articles\/.+$/;
 const GUARDIAN_PREFIX = 'https://www.theguardian.com/';
-const MAX_IDS_PER_QUERY = 250;
+const MAX_IDS_PER_QUERY = 100;
 
-/**
- * Handles the processing of a batch of messages from the queue.
- *
- * @param batch - The batch of messages to process.
- * @param env - The environment object containing various services.
- */
 export async function handleQueue(batch: any, env: Env) {
   const messages = parseMessages(batch);
   const db = initializeDB(env);
@@ -29,24 +23,10 @@ export async function handleQueue(batch: any, env: Env) {
   logger.log(JSON.stringify(inserted));
 }
 
-/**
- * Parses the messages from the batch.
- *
- * @param batch - The batch of messages.
- * @returns An array of parsed messages.
- */
 function parseMessages(batch: any): Array<Message> {
   return batch.messages as unknown as Array<Message>;
 }
 
-/**
- * Processes each message, updating the item status and generating vectors for each entry, or fetching and queuing RSS feeds.
- *
- * @param messages - The array of messages to process.
- * @param env - The environment object containing various services.
- * @param db - The client for database operations.
- * @returns A promise that resolves to an array of inserted items.
- */
 async function processMessages(
   messages: Array<Message>,
   env: Env,
@@ -72,14 +52,6 @@ async function processMessages(
   return inserted;
 }
 
-/**
- * Processes an RSS message, fetching and queuing RSS feed entries.
- *
- * @param id - The ID of the RSS feed.
- * @param db - The client for database operations.
- * @param env - The environment object containing various services.
- * @returns A promise that resolves to an array of inserted items.
- */
 async function processRSSMessage(
   id: string,
   db: DrizzleD1Database,
@@ -87,9 +59,9 @@ async function processRSSMessage(
 ): Promise<any[]> {
   logger.log('Fetching RSS feed:', id);
   const stories = await fetchRSSFeed(id);
-  const allEntries = stories.entries || [];
+  const allEntries = (stories.entries || []) as Array<Record<string, any>>;
 
-  const entryIds = allEntries.map((entry) => generateId(entry));
+  const entryIds = [...new Set(allEntries.map((entry) => generateId(entry)))];
   const existingEntries = await fetchExistingEntries(db, entryIds);
   const existingEntriesMap = new Map(
     existingEntries.map((entry) => [entry.id, entry.status])
@@ -124,13 +96,6 @@ async function processRSSMessage(
   return inserted;
 }
 
-/**
- * Fetches existing entries from the database.
- *
- * @param - The client for database operations.
- * @param entryIds - The IDs of the entries to fetch.
- * @returns A promise that resolves to an array of existing entries.
- */
 async function fetchExistingEntries(db: DrizzleD1Database, entryIds: string[]) {
   if (entryIds.length === 0) {
     return [];
@@ -159,15 +124,6 @@ async function fetchExistingEntries(db: DrizzleD1Database, entryIds: string[]) {
   }
 }
 
-/**
- * Processes an entry message, generating vectors and updating the item status.
- *
- * @param id - The ID of the entry.
- * @param data - The data of the entry.
- * @param db - The client for database operations.
- * @param env - The environment object containing various services.
- * @returns A promise that resolves to the inserted item.
- */
 async function processEntryMessage(
   id: string,
   data: { text: string; metadata: Record<string, any> },
@@ -208,13 +164,6 @@ async function processEntryMessage(
   return insertedItem;
 }
 
-/**
- * Fetches and parses content from a URL.
- *
- * @param url - The URL to fetch content from.
- * @param defaultText - The default text to use if fetching fails.
- * @returns A promise that resolves to the fetched and parsed content.
- */
 async function fetchAndParseContent(
   url: string,
   defaultText: string
@@ -230,13 +179,22 @@ async function fetchAndParseContent(
     logger.log('Fetching', urlToUse);
 
     try {
-      const response = await fetch(urlToUse);
-      const content = urlToUse.endsWith('.json')
-        ? await response.json()
-        : await response.text();
+      const response = await fetch(urlToUse, {
+        headers: {
+          'user-agent':
+            'Mozilla/5.0 (compatible; llm-rss-vectorise-agent/1.0; +https://workers.dev)',
+          accept: 'text/html,application/json;q=0.9,*/*;q=0.8',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with ${response.status}`);
+      }
+
+      const content = await response.text();
       const newQueryText = parseFetchedContent(content, urlToUse);
 
-      if (newQueryText) {
+      if (newQueryText && newQueryText.length > defaultText.length) {
         queryText = newQueryText;
         completed = true;
       }
@@ -251,80 +209,85 @@ async function fetchAndParseContent(
   };
 }
 
-/**
- * Determines the URL to use for fetching content.
- *
- * @param url - The original URL.
- * @returns The URL to use for fetching content.
- */
 function getUrlToUse(url: string): string | null {
   if (BBC_NEWS_PREFIX.test(url) || BBC_SPORT_PREFIX.test(url)) {
     return `${url}.amp`;
   }
-  if (url.startsWith(GUARDIAN_PREFIX)) {
-    return `${url}/amp`;
-  }
+
   return url;
 }
 
-/**
- * Parses the fetched content.
- *
- * @param content - The fetched content.
- * @param url - The URL from which the content was fetched.
- * @returns The parsed content.
- */
-function parseFetchedContent(content: any, url: string): string {
+function parseFetchedContent(content: string, url: string): string {
+  const $ = cheerio.load(content);
+  const headline = $('h1').first().text().trim();
+
   if (url.startsWith(GUARDIAN_PREFIX)) {
-    return parseGuardianContent(content);
-  } else {
-    return parseBBCContent(content);
+    return parseGuardianContent($, headline);
   }
+
+  if (BBC_NEWS_PREFIX.test(url) || BBC_SPORT_PREFIX.test(url)) {
+    return parseBBCContent($, headline);
+  }
+
+  return parseGenericArticleContent($, headline);
 }
 
-/**
- * Parses content from The Guardian.
- *
- * @param json - The JSON content.
- * @returns The parsed content.
- */
-function parseGuardianContent(html: any): string {
-  const $ = cheerio.load(html);
-  let headline = $('h1').text() || '';
-  let textBlocks: string[] = [];
+function parseGuardianContent($: cheerio.CheerioAPI, headline: string): string {
+  const textBlocks = [
+    ...collectParagraphs($, 'main p'),
+    ...collectParagraphs($, '[data-gu-name="body"] p'),
+  ];
 
-  try {
-    textBlocks = $('#maincontent p')
-      .not('figure p')
-      .map((i, el) => $(el).text() || '')
-      .get();
-  } catch (e) {
-    logger.error('Text elements not found');
-  }
-
-  return [headline, ...textBlocks].join('\n\n');
+  return normaliseArticleText([headline, ...textBlocks]);
 }
 
-/**
- * Parses content from BBC.
- *
- * @param html - The HTML content.
- * @returns The parsed content.
- */
-function parseBBCContent(html: string): string {
-  const $ = cheerio.load(html);
-  let headline = $('h1').text() || '';
-  let textBlocks: string[] = [];
+function parseBBCContent($: cheerio.CheerioAPI, headline: string): string {
+  const textBlocks = collectParagraphs($, 'main[role="main"] p');
+  return normaliseArticleText([headline, ...textBlocks]);
+}
 
-  try {
-    textBlocks = $('main[role="main"] p')
-      .not('figure p')
-      .not('section p')
-      .map((i, el) => $(el).text() || '')
-      .get();
-  } catch (e) {
-    logger.error('Text elements not found');
+function parseGenericArticleContent(
+  $: cheerio.CheerioAPI,
+  headline: string
+): string {
+  const selectors = ['article p', 'main article p', 'main p'];
+
+  let textBlocks: string[] = [];
+  for (const selector of selectors) {
+    const blocks = collectParagraphs($, selector);
+    if (blocks.length >= 3) {
+      textBlocks = blocks;
+      break;
+    }
   }
 
-  return [headline, ...textBlocks].join('\n\n');
+  if (!textBlocks.length) {
+    textBlocks = collectParagraphs($, 'p');
+  }
+
+  return normaliseArticleText([headline, ...textBlocks]);
+}
+
+function collectParagraphs($: cheerio.CheerioAPI, selector: string): string[] {
+  return $(selector)
+    .not('figure p')
+    .not('section p')
+    .map((_, el) => $(el).text().trim())
+    .get()
+    .filter(Boolean);
+}
+
+function normaliseArticleText(blocks: string[]): string {
+  const seen = new Set<string>();
+
+  return blocks
+    .map((block) => block.replace(/\s+/g, ' ').trim())
+    .filter((block) => {
+      if (!block || seen.has(block)) {
+        return false;
+      }
+      seen.add(block);
+      return true;
+    })
+    .join('\n\n');
 }

@@ -4,7 +4,7 @@ import { json } from '@remix-run/cloudflare';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 
-import { loraModel, gatewayId } from '../lib/ai';
+import { gatewayId, responseHasPotentialHallucination, runTextModel } from '../lib/ai';
 import { item } from '../drizzle/schema';
 import articleFixture from '../../test/fixtures/article.json';
 
@@ -56,13 +56,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
     const article = matchingItem[0].text;
 
-    return new Response(
-      await env.AI.run(
-        loraModel,
-        {
-          stream: true,
-          raw: true,
-          prompt: `<s> [INST] Your task is to provide a professional summary of the article provided.
+    const prompt = `<s> [INST] Your task is to provide a professional summary of the article provided.
 
 Use the content provided under the heading "Article" and only that content to conduct your analysis. Do not embellish or add detail beyond the source material. The term "Article" is a placeholder for the actual content and should not be included in your output.
 
@@ -87,24 +81,36 @@ ${article}
 
 [/INST]
 
-Summary: </s>`,
-        },
-        {
-          gateway: {
-            id: gatewayId,
-            skipCache: env.ENVIRONMENT === 'development',
-            cacheTtl: 172800,
-          },
-        }
-      ),
-      {
-        headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          Connection: 'keep-alive',
-        },
-      }
+Summary: </s>`;
+
+    const baseResponse = await runTextModel(
+      env,
+      prompt,
+      true,
+      env.ENVIRONMENT === 'development'
     );
+
+    let finalResponse = baseResponse as ReadableStream | string;
+
+    if (typeof baseResponse === 'string') {
+      const hasPotentialHallucination = responseHasPotentialHallucination(
+        baseResponse,
+        article
+      );
+
+      finalResponse = hasPotentialHallucination
+        ? `${baseResponse}\n\n> ⚠️ Verification note: one or more quoted fragments could not be matched exactly in the article text.`
+        : baseResponse;
+    }
+
+    return new Response(finalResponse, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+        'x-ai-gateway-id': gatewayId,
+      },
+    });
   } catch (error) {
     console.error(error);
 
